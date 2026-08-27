@@ -12,9 +12,10 @@ interface TrayProps {
   onDragStart: (shape: Shape, event: ReactPointerEvent<HTMLDivElement>) => void;
   onDragMove: (event: ReactPointerEvent<HTMLDivElement>) => void;
   onDragEnd: (event: ReactPointerEvent<HTMLDivElement>) => void;
+  onDragCancel: () => void;
 }
 
-export function Tray({ tray, theme, draggingShapeId, disabled, onDragStart, onDragMove, onDragEnd }: TrayProps) {
+export function Tray({ tray, theme, draggingShapeId, disabled, onDragStart, onDragMove, onDragEnd, onDragCancel }: TrayProps) {
   return (
     <div className="tray">
       {tray.map((shape, i) => (
@@ -27,6 +28,7 @@ export function Tray({ tray, theme, draggingShapeId, disabled, onDragStart, onDr
           onDragStart={onDragStart}
           onDragMove={onDragMove}
           onDragEnd={onDragEnd}
+          onDragCancel={onDragCancel}
         />
       ))}
     </div>

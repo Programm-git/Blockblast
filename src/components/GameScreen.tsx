@@ -66,17 +66,24 @@ export function GameScreen({ onMenu }: GameScreenProps) {
 
   const handleDragEnd = useCallback(
     (e: ReactPointerEvent<HTMLDivElement>) => {
-      setDrag((prev) => {
-        if (!prev) return null;
-        const target = computeTargetOrigin(prev.shape, e.clientX, e.clientY);
+      // Read the in-flight drag directly instead of inside setDrag's updater:
+      // updater functions must be pure, and calling placePiece (another
+      // setState) from within one runs it twice under StrictMode's dev-only
+      // double-invoke check, occasionally dropping or duplicating the move.
+      if (drag) {
+        const target = computeTargetOrigin(drag.shape, e.clientX, e.clientY);
         if (target) {
-          placePiece(prev.shape.id, target.row, target.col);
+          placePiece(drag.shape.id, target.row, target.col);
         }
-        return null;
-      });
+      }
+      setDrag(null);
     },
-    [computeTargetOrigin, placePiece],
+    [drag, computeTargetOrigin, placePiece],
   );
+
+  const handleDragCancel = useCallback(() => {
+    setDrag(null);
+  }, []);
 
   let ghost: GhostPreview | null = null;
   if (drag) {
@@ -112,6 +119,7 @@ export function GameScreen({ onMenu }: GameScreenProps) {
         onDragStart={handleDragStart}
         onDragMove={handleDragMove}
         onDragEnd={handleDragEnd}
+        onDragCancel={handleDragCancel}
       />
 
       {drag && (

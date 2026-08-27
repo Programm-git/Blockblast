@@ -178,5 +178,18 @@ export function useGameEngine(colorCount: number, onMoveSettled?: (score: number
     [colorCount, onMoveSettled],
   );
 
-  return { state, canPlace, placePiece, reset };
+  // Permanent game-over watchdog: recomputed fresh from board+tray on every
+  // render rather than cached in state and pushed via an effect. A separate
+  // effect that calls setState reacts to the placement that already caused
+  // it, one render late, and layering that extra render/commit cycle onto
+  // pointer-capture timing during a drag caused it to occasionally break
+  // (browsers firing pointercancel with the drop mid-flight). Deriving it
+  // during render is a pure computation with no such side channel, and it
+  // can never miss a state change since it isn't cached at all — it's the
+  // single, always-current source of truth for "no move is possible any
+  // more", independent of whether the placement code path itself checked.
+  const isGameOver = state.clearingCells ? state.isGameOver : computeIsGameOver(state.board, state.tray);
+  const exposedState = isGameOver === state.isGameOver ? state : { ...state, isGameOver };
+
+  return { state: exposedState, canPlace, placePiece, reset };
 }
