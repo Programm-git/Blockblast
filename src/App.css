@@ -1,0 +1,59 @@
+.app-root {
+  position: relative;
+  height: 100dvh;
+  width: 100%;
+  overflow: hidden;
+  background: linear-gradient(160deg, var(--bg-1), var(--bg-2, var(--bg-1)) 55%, var(--bg-3, var(--bg-2)));
+  transition: background 0.55s ease;
+  color: var(--ui-text);
+}
+
+.app-screen {
+  position: relative;
+  z-index: 1;
+  height: 100%;
+}
+
+.btn {
+  border: none;
+  border-radius: 14px;
+  padding: 13px 26px;
+  font-size: 14px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  transition: transform 0.12s ease, opacity 0.15s ease, background 0.5s ease, border-color 0.5s ease;
+}
+
+.btn:active {
+  transform: scale(0.96);
+}
+
+.btn--primary {
+  background: var(--accent);
+  color: #fff;
+  box-shadow: 0 8px 20px color-mix(in srgb, var(--accent) 45%, transparent);
+}
+
+.btn--ghost {
+  background: var(--panel-bg);
+  color: var(--ui-text);
+  border: 1px solid var(--panel-border);
+}
+
+.btn--small {
+  padding: 8px 14px;
+  font-size: 12px;
+}
+
+.game-screen {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding: max(12px, env(safe-area-inset-top)) 12px 12px;
+  justify-content: center;
+  gap: 4px;
+}
+
+.game-board-area {
+  position: relative;
+}

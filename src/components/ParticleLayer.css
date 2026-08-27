@@ -1,0 +1,93 @@
+.particle-layer {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+  border-radius: 18px;
+  z-index: 20;
+}
+
+.particle-flash {
+  position: absolute;
+  inset: 0;
+  opacity: 0.35;
+  animation: particle-flash-fade 0.26s ease forwards;
+  mix-blend-mode: screen;
+}
+
+@keyframes particle-flash-fade {
+  0% {
+    opacity: 0.5;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+.particle {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  background: var(--particle-color);
+  transform: translate(-50%, -50%);
+  animation: particle-fly 0.65s ease-out forwards;
+  animation-delay: var(--delay, 0s);
+  will-change: transform, opacity;
+}
+
+.particle--square {
+  border-radius: 2px;
+}
+
+.particle--bubble {
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, #ffffffcc, var(--particle-color) 70%);
+  width: 10px;
+  height: 10px;
+}
+
+.particle--spark {
+  border-radius: 50%;
+  box-shadow: 0 0 6px 1px var(--particle-color);
+}
+
+.particle--leaf {
+  border-radius: 0 60% 0 60%;
+  width: 9px;
+  height: 9px;
+}
+
+.particle--crystal {
+  border-radius: 2px;
+  transform: translate(-50%, -50%) rotate(45deg);
+  width: 7px;
+  height: 7px;
+}
+
+.particle--star {
+  clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
+  width: 10px;
+  height: 10px;
+}
+
+.particle--petal {
+  border-radius: 60% 0 60% 0;
+  width: 9px;
+  height: 9px;
+}
+
+.particle--glow {
+  border-radius: 50%;
+  box-shadow: 0 0 8px 2px var(--particle-color);
+}
+
+@keyframes particle-fly {
+  0% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(calc(-50% + var(--dx)), calc(-50% + var(--dy))) scale(0.4);
+  }
+}
