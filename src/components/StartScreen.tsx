@@ -5,7 +5,6 @@ interface StartScreenProps {
   theme: GameTheme;
   best: number;
   onPlay: () => void;
-  onThemes: () => void;
 }
 
 const DECOR_SHAPES = [
@@ -17,7 +16,7 @@ const DECOR_SHAPES = [
   { top: '40%', left: '90%', size: 26, rot: -10, colorSlot: 5 },
 ];
 
-export function StartScreen({ theme, best, onPlay, onThemes }: StartScreenProps) {
+export function StartScreen({ theme, best, onPlay }: StartScreenProps) {
   return (
     <div className="start-screen">
       <div className="start-decor" aria-hidden="true">
@@ -51,9 +50,6 @@ export function StartScreen({ theme, best, onPlay, onThemes }: StartScreenProps)
 
         <button className="btn btn--primary btn--big" onClick={onPlay}>
           SPIELEN
-        </button>
-        <button className="btn btn--ghost" onClick={onThemes}>
-          WELTEN
         </button>
       </div>
     </div>

@@ -5,13 +5,12 @@ import { themeToCssVars } from './theme/cssVars';
 import { useReducedMotion } from './hooks/useReducedMotion';
 import { BackgroundDecor } from './components/BackgroundDecor';
 import { StartScreen } from './components/StartScreen';
-import { ThemeSelect } from './components/ThemeSelect';
 import { GameScreen } from './components/GameScreen';
 
-type Screen = 'start' | 'themes' | 'game';
+type Screen = 'start' | 'game';
 
 function AppShell() {
-  const { theme, themeId, allThemes, isUnlocked, setTheme, mode, setMode } = useTheme();
+  const { theme } = useTheme();
   const reducedMotion = useReducedMotion();
   const [screen, setScreen] = useState<Screen>('start');
   const [best, setBest] = useState(() => readBestScore());
@@ -21,23 +20,7 @@ function AppShell() {
       <BackgroundDecor theme={theme} reducedMotion={reducedMotion} />
       <div className="app-screen">
         {screen === 'start' && (
-          <StartScreen
-            theme={theme}
-            best={best}
-            onPlay={() => setScreen('game')}
-            onThemes={() => setScreen('themes')}
-          />
-        )}
-        {screen === 'themes' && (
-          <ThemeSelect
-            themes={allThemes}
-            activeId={themeId}
-            isUnlocked={isUnlocked}
-            onSelect={setTheme}
-            onBack={() => setScreen('start')}
-            mode={mode}
-            onSetMode={setMode}
-          />
+          <StartScreen theme={theme} best={best} onPlay={() => setScreen('game')} />
         )}
         {screen === 'game' && (
           <GameScreen
