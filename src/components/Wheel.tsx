@@ -15,35 +15,54 @@ const SEGMENT_COLORS: Record<Rarity, string> = {
 };
 
 const WHEEL_RARITIES: Rarity[] = ['common', 'rare', 'epic', 'mythic', 'legendary'];
+const SEGMENT_ANGLE = 360 / WHEEL_RARITIES.length;
 
 export function Wheel() {
   const { spin, wheelExhausted } = useTheme();
   const [spinning, setSpinning] = useState(false);
   const [angle, setAngle] = useState(0);
   const [result, setResult] = useState<{ name: string; rarity: Rarity } | null>(null);
-  const spinCount = useRef(0);
+  const angleRef = useRef(0);
+  const pendingResult = useRef<{ name: string; rarity: Rarity } | null>(null);
 
   const handleSpin = useCallback(() => {
     if (spinning || wheelExhausted) return;
+
+    // Decide the actual prize first, then aim the wheel's rotation at that
+    // exact segment — previously the spin angle was picked independently of
+    // the result, so the wheel could visibly land on the wrong rarity.
+    const wonId = spin();
+    if (!wonId) return;
+    const won = getThemeById(wonId);
+    pendingResult.current = { name: won.name, rarity: won.rarity };
+
     setSpinning(true);
     setResult(null);
-    spinCount.current += 1;
+
+    const segmentIndex = WHEEL_RARITIES.indexOf(won.rarity);
+    const segmentCenter = segmentIndex * SEGMENT_ANGLE + SEGMENT_ANGLE / 2;
+    const jitter = (Math.random() - 0.5) * (SEGMENT_ANGLE * 0.6);
+    const targetWithinSegment = segmentCenter + jitter;
+    // The disc rotates clockwise by `angle`; the pointer is fixed at the
+    // top (0deg). A segment centered at `targetWithinSegment` (measured
+    // clockwise from the disc's own top) sits under the pointer once the
+    // disc's total rotation, mod 360, equals (360 - targetWithinSegment).
+    const desiredFinalMod = (360 - targetWithinSegment + 360) % 360;
+    const currentMod = ((angleRef.current % 360) + 360) % 360;
     const extraTurns = 4 + Math.floor(Math.random() * 3);
-    const randomOffset = Math.random() * 360;
-    setAngle((prev) => prev + extraTurns * 360 + randomOffset);
+    const delta = extraTurns * 360 + ((desiredFinalMod - currentMod + 360) % 360);
+
+    const nextAngle = angleRef.current + delta;
+    angleRef.current = nextAngle;
+    setAngle(nextAngle);
 
     window.setTimeout(() => {
-      const wonId = spin();
       setSpinning(false);
-      if (wonId) {
-        const won = getThemeById(wonId);
-        setResult({ name: won.name, rarity: won.rarity });
-      }
+      setResult(pendingResult.current);
     }, 2200);
   }, [spin, spinning, wheelExhausted]);
 
-  const segmentAngle = 360 / WHEEL_RARITIES.length;
-  const gradient = WHEEL_RARITIES.map((r, i) => `${SEGMENT_COLORS[r]} ${i * segmentAngle}deg ${(i + 1) * segmentAngle}deg`).join(', ');
+  const gradient = WHEEL_RARITIES.map((r, i) => `${SEGMENT_COLORS[r]} ${i * SEGMENT_ANGLE}deg ${(i + 1) * SEGMENT_ANGLE}deg`).join(', ');
 
   return (
     <div className="wheel-section">
@@ -62,7 +81,7 @@ export function Wheel() {
             <span
               key={r}
               className="wheel-label"
-              style={{ transform: `rotate(${i * segmentAngle + segmentAngle / 2}deg)` }}
+              style={{ transform: `rotate(${i * SEGMENT_ANGLE + SEGMENT_ANGLE / 2}deg)` }}
             >
               {RARITY_LABEL[r].toUpperCase()}
             </span>
