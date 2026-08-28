@@ -21,14 +21,14 @@ export const RARITY_COUNT: Record<Rarity, number> = {
   secret: 1,
 };
 
-/** Relative pick weight per rarity *tier* on the wheel (not per-theme). Secret is never on the wheel. */
+/** Relative pick weight per rarity *tier* on the wheel (not per-theme). */
 export const RARITY_WHEEL_WEIGHT: Record<Rarity, number> = {
-  common: 42,
-  rare: 27,
-  epic: 16,
-  mythic: 9,
-  legendary: 6,
-  secret: 0,
+  common: 40,
+  rare: 30,
+  epic: 15,
+  mythic: 10,
+  legendary: 5,
+  secret: 1,
 };
 
 /**

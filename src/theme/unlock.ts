@@ -27,12 +27,13 @@ export function writeUnlockedIds(ids: Set<string>) {
 
 /**
  * Picks a random still-locked theme for the wheel to award, weighted by
- * rarity tier (RARITY_WHEEL_WEIGHT). The secret theme is never on the
- * wheel — it has its own hidden unlock path. Returns null once every
- * wheel-eligible theme is already unlocked.
+ * rarity tier (RARITY_WHEEL_WEIGHT) — including a slim 1% chance at the
+ * Secret theme itself. The hidden in-game condition (checkSecretUnlock)
+ * remains a second, independent way to earn it early. Returns null once
+ * every wheel-eligible theme is already unlocked.
  */
 export function spinWheel(unlockedIds: Set<string>): string | null {
-  const wheelThemes = THEMES.filter((t) => t.unlock.type === 'wheel' && !unlockedIds.has(t.id));
+  const wheelThemes = THEMES.filter((t) => t.unlock.type !== 'start' && !unlockedIds.has(t.id));
   if (wheelThemes.length === 0) return null;
 
   const tiersPresent = new Set(wheelThemes.map((t) => t.rarity));
@@ -57,7 +58,7 @@ export function spinWheel(unlockedIds: Set<string>): string | null {
 }
 
 export function isWheelExhausted(unlockedIds: Set<string>): boolean {
-  return THEMES.every((t) => t.unlock.type !== 'wheel' || unlockedIds.has(t.id));
+  return THEMES.every((t) => t.unlock.type === 'start' || unlockedIds.has(t.id));
 }
 
 /**
