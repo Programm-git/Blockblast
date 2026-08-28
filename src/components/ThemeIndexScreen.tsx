@@ -2,7 +2,6 @@ import { useTheme } from '../theme/ThemeContext';
 import { RARITY_LABEL, RARITY_ORDER } from '../theme/rarity';
 import { themesByRarity } from '../theme/themes';
 import type { GameTheme, Rarity } from '../theme/types';
-import { Wheel } from './Wheel';
 import './ThemeIndexScreen.css';
 
 interface ThemeIndexScreenProps {
@@ -62,8 +61,6 @@ export function ThemeIndexScreen({ onBack }: ThemeIndexScreenProps) {
         <h2>INDEX</h2>
         <span className="theme-index-count">{unlockedCount} / 51</span>
       </div>
-
-      <Wheel />
 
       {RARITY_ORDER.map((rarity: Rarity) => (
         <section key={rarity} className="theme-index-section">
