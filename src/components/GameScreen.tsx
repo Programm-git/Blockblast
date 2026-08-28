@@ -28,19 +28,12 @@ interface DragState {
 }
 
 export function GameScreen({ onMenu }: GameScreenProps) {
-  const { theme, requestAutoThemeForScore } = useTheme();
+  const { theme, onMoveSettled } = useTheme();
   const reducedMotion = useReducedMotion();
   const boardRef = useRef<HTMLDivElement | null>(null);
   const [drag, setDrag] = useState<DragState | null>(null);
 
-  const handleMoveSettled = useCallback(
-    (score: number) => {
-      requestAutoThemeForScore(score);
-    },
-    [requestAutoThemeForScore],
-  );
-
-  const { state, placePiece, reset } = useGameEngine(theme.blocks.colors.length, handleMoveSettled);
+  const { state, placePiece, reset } = useGameEngine(theme.blocks.colors.length, onMoveSettled);
 
   const computeTargetOrigin = useCallback((shape: Shape, clientX: number, clientY: number) => {
     const el = boardRef.current;
@@ -103,7 +96,7 @@ export function GameScreen({ onMenu }: GameScreenProps) {
 
   return (
     <div className="game-screen">
-      <ScoreBar score={state.score} best={state.best} onMenu={onMenu} />
+      <ScoreBar score={state.score} best={state.best} onMenu={onMenu} isSecret={theme.rarity === 'secret'} />
 
       <div className="game-board-area">
         <Board ref={boardRef} theme={theme} board={state.board} ghost={ghost} clearingCells={state.clearingCells} />

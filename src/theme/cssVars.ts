@@ -7,8 +7,9 @@ export function themeToCssVars(theme: GameTheme): ThemeCSSVars {
   const bg = theme.background.gradient;
   return {
     '--bg-1': bg[0],
-    '--bg-2': bg[1],
-    '--bg-3': bg[2] ?? bg[1],
+    '--bg-2': bg[1] ?? bg[0],
+    '--bg-3': bg[2] ?? bg[bg.length - 1],
+    '--bg-4': bg[3] ?? bg[bg.length - 1],
     '--board-bg': theme.board.background,
     '--board-border': theme.board.border,
     '--cell-empty': theme.board.emptyCell,

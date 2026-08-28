@@ -81,6 +81,69 @@
   box-shadow: 0 0 8px 2px var(--particle-color);
 }
 
+.particle--sand {
+  border-radius: 50%;
+  width: 4px;
+  height: 4px;
+  opacity: 0.8;
+}
+
+.particle--feather {
+  border-radius: 0 70% 0 70%;
+  width: 11px;
+  height: 6px;
+}
+
+.particle--ember {
+  border-radius: 50%;
+  width: 5px;
+  height: 5px;
+  box-shadow: 0 0 8px 2px var(--particle-color);
+  background: radial-gradient(circle, #fff6d8, var(--particle-color) 70%);
+}
+
+.particle--rune {
+  border-radius: 3px;
+  transform: translate(-50%, -50%) rotate(45deg);
+  box-shadow: 0 0 6px 1px var(--particle-color);
+}
+
+.particle--pixel {
+  border-radius: 0;
+  width: 6px;
+  height: 6px;
+}
+
+.particle--ripple {
+  border-radius: 50%;
+  background: transparent;
+  border: 2px solid var(--particle-color);
+  width: 12px;
+  height: 12px;
+}
+
+.particle--lightning {
+  width: 3px;
+  height: 14px;
+  border-radius: 1px;
+  box-shadow: 0 0 8px 2px var(--particle-color);
+}
+
+.particle--mineral {
+  border-radius: 2px;
+  transform: translate(-50%, -50%) rotate(20deg);
+  clip-path: polygon(50% 0%, 100% 35%, 80% 100%, 20% 100%, 0% 35%);
+  width: 8px;
+  height: 8px;
+}
+
+.particle--binary {
+  border-radius: 0;
+  width: 6px;
+  height: 6px;
+  background: transparent;
+}
+
 @keyframes particle-fly {
   0% {
     opacity: 1;
@@ -89,5 +152,57 @@
   100% {
     opacity: 0;
     transform: translate(calc(-50% + var(--dx)), calc(-50% + var(--dy))) scale(0.4);
+  }
+}
+
+/* ---------- Secret theme's own clear look: no confetti, digital instead ---------- */
+
+.particle-flash--secret {
+  background: #ffffff;
+  opacity: 0.6;
+  animation-duration: 0.09s;
+  mix-blend-mode: normal;
+}
+
+.secret-clear-scanline {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, #00f7ff, #ff00c8, transparent);
+  animation: secret-scan 0.4s ease-out forwards;
+  top: 0;
+}
+
+@keyframes secret-scan {
+  0% {
+    top: 0;
+    opacity: 1;
+  }
+  100% {
+    top: 100%;
+    opacity: 0;
+  }
+}
+
+.secret-data-bit {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  font-family: 'Courier New', monospace;
+  font-size: 11px;
+  font-weight: 700;
+  color: #00f7ff;
+  text-shadow: 0 0 6px rgba(0, 247, 255, 0.8);
+  animation: secret-bit-fade 0.4s ease-out forwards;
+}
+
+@keyframes secret-bit-fade {
+  0% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1.2);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -60%) scale(0.8);
   }
 }

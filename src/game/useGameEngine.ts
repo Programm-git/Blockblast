@@ -57,7 +57,13 @@ function makeInitialState(colorCount: number): GameEngineState {
   };
 }
 
-export function useGameEngine(colorCount: number, onMoveSettled?: (score: number) => void) {
+export interface MoveSettledInfo {
+  score: number;
+  lineCount: number;
+  combo: number;
+}
+
+export function useGameEngine(colorCount: number, onMoveSettled?: (info: MoveSettledInfo) => void) {
   const [state, setState] = useState<GameEngineState>(() => makeInitialState(colorCount));
   const clearTimer = useRef<number | null>(null);
   const eventCounter = useRef(0);
@@ -96,7 +102,7 @@ export function useGameEngine(colorCount: number, onMoveSettled?: (score: number
           const gameOver = computeIsGameOver(boardAfterPlace, filledTray);
           const nextBest = Math.max(prev.best, nextScore);
           if (nextBest !== prev.best) writeBestScore(nextBest);
-          onMoveSettled?.(nextScore);
+          onMoveSettled?.({ score: nextScore, lineCount: 0, combo: 0 });
           return {
             ...prev,
             board: boardAfterPlace,
@@ -149,7 +155,7 @@ export function useGameEngine(colorCount: number, onMoveSettled?: (score: number
             const gameOver = computeIsGameOver(boardCleared, filledTray);
             const finalBest = Math.max(cur.best, finalScore);
             if (finalBest !== cur.best) writeBestScore(finalBest);
-            onMoveSettled?.(finalScore);
+            onMoveSettled?.({ score: finalScore, lineCount: clearEvent.lineCount, combo: clearEvent.combo });
             return {
               ...cur,
               board: boardCleared,

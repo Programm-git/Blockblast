@@ -1,0 +1,243 @@
+.theme-index {
+  height: 100%;
+  overflow-y: auto;
+  padding: 20px 16px 40px;
+  touch-action: pan-y;
+}
+
+.theme-index-header {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  max-width: 720px;
+  margin: 0 auto 8px;
+}
+
+.theme-index-header h2 {
+  flex: 1;
+  color: var(--ui-text);
+  letter-spacing: 0.06em;
+  font-size: 18px;
+  margin: 0;
+}
+
+.theme-index-count {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--ui-secondary);
+}
+
+.theme-index-section {
+  max-width: 720px;
+  margin: 0 auto 18px;
+}
+
+.theme-index-section-title {
+  font-size: 12px;
+  letter-spacing: 0.15em;
+  font-weight: 800;
+  margin: 0 0 10px;
+  color: var(--ui-secondary);
+}
+
+.theme-index-section-title--common {
+  color: #9fb3c4;
+}
+.theme-index-section-title--rare {
+  color: #4f8ef7;
+}
+.theme-index-section-title--epic {
+  color: #a768e0;
+}
+.theme-index-section-title--mythic {
+  color: #ff6fa5;
+}
+.theme-index-section-title--legendary {
+  color: #f4c542;
+}
+.theme-index-section-title--secret {
+  color: #00f7ff;
+}
+
+.theme-index-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+  gap: 10px;
+}
+
+.index-card {
+  position: relative;
+  border: 2px solid transparent;
+  border-radius: 14px;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  color: #fff;
+  overflow: hidden;
+  min-height: 96px;
+}
+
+.index-card--active {
+  border-color: #ffffff;
+  box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.25);
+}
+
+.index-card-board {
+  width: 100%;
+  height: 42px;
+  border-radius: 8px;
+  border: 1px solid;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+}
+
+.index-card-swatch {
+  width: 12px;
+  height: 12px;
+}
+
+.index-card-name {
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-align: center;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+}
+
+.index-card-active-badge {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  font-size: 8px;
+  font-weight: 800;
+  background: rgba(255, 255, 255, 0.25);
+  padding: 2px 5px;
+  border-radius: 5px;
+}
+
+/* ---------- locked state ---------- */
+
+.index-card--locked {
+  background: #14161c;
+  color: #6a6f7a;
+  justify-content: center;
+}
+
+.index-card-silhouette {
+  width: 100%;
+  height: 42px;
+  border-radius: 8px;
+  background: repeating-linear-gradient(135deg, #1c1f27 0 6px, #181a20 6px 12px);
+}
+
+.index-card-lock {
+  font-size: 9px;
+  font-weight: 700;
+  color: #6a6f7a;
+}
+
+/* ---------- rarity escalation for unlocked cards ---------- */
+
+.index-card--rare {
+  animation: index-card-pan 6s ease-in-out infinite alternate;
+  background-size: 160% 160% !important;
+}
+
+.index-card--epic {
+  animation: index-card-pan 4.5s ease-in-out infinite alternate;
+  background-size: 180% 180% !important;
+  box-shadow: 0 0 14px 1px rgba(167, 104, 224, 0.3);
+}
+
+.index-card--mythic {
+  animation: index-card-pan 4s ease-in-out infinite alternate;
+  background-size: 200% 200% !important;
+  box-shadow: 0 0 18px 2px rgba(255, 111, 165, 0.35);
+}
+
+.index-card--legendary {
+  animation: index-card-pan 3.2s ease-in-out infinite alternate, index-card-border-spin 5s linear infinite;
+  background-size: 220% 220% !important;
+  border: 2px solid transparent;
+  background-clip: padding-box;
+  box-shadow: 0 0 22px 3px rgba(244, 197, 66, 0.45);
+}
+
+.index-card-shine {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(115deg, transparent 30%, rgba(255, 255, 255, 0.35) 48%, transparent 65%);
+  background-size: 250% 250%;
+  animation: index-card-shine-sweep 3.5s ease-in-out infinite;
+  pointer-events: none;
+}
+
+@keyframes index-card-pan {
+  from {
+    background-position: 0% 0%;
+  }
+  to {
+    background-position: 100% 100%;
+  }
+}
+
+@keyframes index-card-shine-sweep {
+  0%,
+  100% {
+    background-position: -50% -50%;
+  }
+  50% {
+    background-position: 150% 150%;
+  }
+}
+
+@keyframes index-card-border-spin {
+  0%,
+  100% {
+    box-shadow: 0 0 22px 3px rgba(244, 197, 66, 0.45);
+  }
+  50% {
+    box-shadow: 0 0 28px 5px rgba(244, 197, 66, 0.7);
+  }
+}
+
+/* ---------- secret locked ---------- */
+
+.index-card--secret-locked {
+  background: #050505;
+  border: 1px solid #1a1a1a;
+  justify-content: center;
+  align-items: center;
+}
+
+.index-card-secret-glitch {
+  font-family: 'Courier New', monospace;
+  font-size: 20px;
+  font-weight: 800;
+  color: #00f7ff;
+  text-shadow:
+    1px 0 0 rgba(255, 0, 200, 0.6),
+    -1px 0 0 rgba(0, 247, 255, 0.6);
+  animation: secret-card-glitch 4s steps(1) infinite;
+}
+
+@keyframes secret-card-glitch {
+  0%,
+  92%,
+  100% {
+    transform: translate(0, 0);
+    opacity: 1;
+  }
+  93% {
+    transform: translate(-1px, 1px);
+    opacity: 0.6;
+  }
+  95% {
+    transform: translate(1px, -1px);
+    opacity: 1;
+  }
+}

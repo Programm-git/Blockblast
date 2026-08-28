@@ -15,6 +15,11 @@
   font-weight: 800;
 }
 
+.combo-popup--secret {
+  font-family: 'Courier New', monospace;
+  text-shadow: 0 0 10px rgba(0, 247, 255, 0.7);
+}
+
 .combo-popup-combo {
   font-size: 20px;
   font-weight: 700;

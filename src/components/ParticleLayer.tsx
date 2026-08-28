@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { BOARD_SIZE } from '../game/types';
 import type { ClearEvent } from '../game/useGameEngine';
 import type { GameTheme } from '../theme/types';
+import { RARITY_INTENSITY } from '../theme/rarity';
 import './ParticleLayer.css';
 
 interface Particle {
@@ -14,20 +15,29 @@ interface Particle {
   color: string;
 }
 
+interface DataBit {
+  id: number;
+  left: number;
+  top: number;
+  char: string;
+}
+
 interface ParticleLayerProps {
   event: ClearEvent | null;
   theme: GameTheme;
   reducedMotion: boolean;
 }
 
-const MAX_PARTICLES = 26;
+const BASE_MAX_PARTICLES = 22;
 
 let particleId = 0;
 
 export function ParticleLayer({ event, theme, reducedMotion }: ParticleLayerProps) {
   const [particles, setParticles] = useState<Particle[]>([]);
+  const [dataBits, setDataBits] = useState<DataBit[]>([]);
   const [flash, setFlash] = useState(false);
   const timers = useRef<number[]>([]);
+  const isSecret = theme.rarity === 'secret';
 
   useEffect(() => {
     if (!event) return;
@@ -35,12 +45,30 @@ export function ParticleLayer({ event, theme, reducedMotion }: ParticleLayerProp
     timers.current = [];
 
     setFlash(true);
-    const flashTimer = window.setTimeout(() => setFlash(false), 260);
+    const flashTimer = window.setTimeout(() => setFlash(false), isSecret ? 90 : 260);
     timers.current.push(flashTimer);
 
     if (reducedMotion) return;
 
-    const step = Math.max(1, Math.ceil(event.cells.length / MAX_PARTICLES));
+    if (isSecret) {
+      const bits: DataBit[] = event.cells.slice(0, 20).map(([r, c], i) => {
+        particleId += 1;
+        return {
+          id: particleId,
+          left: ((c + 0.5) / BOARD_SIZE) * 100,
+          top: ((r + 0.5) / BOARD_SIZE) * 100,
+          char: i % 2 === 0 ? '1' : '0',
+        };
+      });
+      setDataBits(bits);
+      const t = window.setTimeout(() => setDataBits([]), 420);
+      timers.current.push(t);
+      return;
+    }
+
+    const intensity = RARITY_INTENSITY[theme.rarity];
+    const maxParticles = Math.round(BASE_MAX_PARTICLES * intensity.particleCountMul);
+    const step = Math.max(1, Math.ceil(event.cells.length / maxParticles));
     const next: Particle[] = [];
     event.cells.forEach(([r, c], i) => {
       if (i % step !== 0) return;
@@ -57,11 +85,25 @@ export function ParticleLayer({ event, theme, reducedMotion }: ParticleLayerProp
       });
     });
     setParticles(next);
-    const clearTimer = window.setTimeout(() => setParticles([]), 700);
+    const clearTimer = window.setTimeout(() => setParticles([]), 700 / intensity.animSpeedMul);
     timers.current.push(clearTimer);
-  }, [event, theme, reducedMotion]);
+  }, [event, theme, reducedMotion, isSecret]);
 
   useEffect(() => () => timers.current.forEach((t) => window.clearTimeout(t)), []);
+
+  if (isSecret) {
+    return (
+      <div className="particle-layer" aria-hidden="true">
+        {flash && <div className="particle-flash particle-flash--secret" />}
+        {event && flash && <div className="secret-clear-scanline" />}
+        {dataBits.map((b) => (
+          <span key={b.id} className="secret-data-bit" style={{ left: `${b.left}%`, top: `${b.top}%` }}>
+            {b.char}
+          </span>
+        ))}
+      </div>
+    );
+  }
 
   return (
     <div className="particle-layer" aria-hidden="true">

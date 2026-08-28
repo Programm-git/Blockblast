@@ -6,6 +6,8 @@
   z-index: 0;
 }
 
+/* ---------- particle family ---------- */
+
 .bg-decor-item {
   position: absolute;
   top: 100%;
@@ -20,11 +22,17 @@
   border: 1px solid rgba(255, 255, 255, 0.25);
 }
 
-.bg-decor--snow .bg-decor-item {
+.bg-decor--snow .bg-decor-item,
+.bg-decor--ash .bg-decor-item {
   background: rgba(255, 255, 255, 0.85);
   box-shadow: 0 0 4px rgba(255, 255, 255, 0.6);
   animation-name: bg-float-down;
   top: -5%;
+}
+
+.bg-decor--ash .bg-decor-item {
+  background: rgba(180, 180, 180, 0.7);
+  box-shadow: none;
 }
 
 .bg-decor--stars .bg-decor-item {
@@ -33,15 +41,59 @@
   width: 3px !important;
   height: 3px !important;
   animation-name: bg-twinkle;
-  top: auto;
+  top: var(--star-top, 30%);
   opacity: 0.6;
 }
 
 .bg-decor--leaves .bg-decor-item {
-  background: rgba(180, 220, 140, 0.35);
+  background: rgba(180, 220, 140, 0.4);
   border-radius: 0 70% 0 70%;
   animation-name: bg-float-down;
   top: -5%;
+}
+
+.bg-decor--petals .bg-decor-item {
+  background: rgba(255, 170, 210, 0.55);
+  border-radius: 60% 0 60% 0;
+  animation-name: bg-float-down;
+  top: -5%;
+}
+
+.bg-decor--embers .bg-decor-item {
+  background: radial-gradient(circle, rgba(255, 170, 80, 0.9), rgba(255, 90, 30, 0));
+  box-shadow: 0 0 6px rgba(255, 120, 40, 0.6);
+  width: 4px !important;
+  height: 4px !important;
+}
+
+.bg-decor--sand .bg-decor-item {
+  background: rgba(230, 190, 130, 0.55);
+  width: 3px !important;
+  height: 3px !important;
+}
+
+.bg-decor--fireflies .bg-decor-item {
+  background: radial-gradient(circle, rgba(255, 255, 180, 0.95), rgba(255, 255, 120, 0));
+  box-shadow: 0 0 8px rgba(255, 255, 150, 0.7);
+  width: 4px !important;
+  height: 4px !important;
+  animation-name: bg-firefly;
+}
+
+.bg-decor--runes .bg-decor-item {
+  background: rgba(232, 178, 62, 0.4);
+  border-radius: 3px;
+  transform: rotate(45deg);
+  box-shadow: 0 0 5px rgba(232, 178, 62, 0.4);
+}
+
+.bg-decor--sparkle .bg-decor-item {
+  background: #ffffff;
+  clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
+  width: 5px !important;
+  height: 5px !important;
+  animation-name: bg-twinkle;
+  top: var(--star-top, 40%);
 }
 
 @keyframes bg-float-up {
@@ -81,19 +133,173 @@
 @keyframes bg-twinkle {
   0%,
   100% {
-    opacity: 0.2;
+    opacity: 0.15;
   }
   50% {
     opacity: 0.9;
   }
 }
 
-.bg-decor--stars .bg-decor-item:nth-child(3n) {
-  top: 20%;
+@keyframes bg-firefly {
+  0%,
+  100% {
+    opacity: 0.15;
+    transform: translate(0, 0);
+  }
+  25% {
+    opacity: 0.9;
+    transform: translate(12px, -10px);
+  }
+  50% {
+    opacity: 0.3;
+    transform: translate(-8px, -20px);
+  }
+  75% {
+    opacity: 0.8;
+    transform: translate(6px, -30px);
+  }
 }
-.bg-decor--stars .bg-decor-item:nth-child(3n + 1) {
-  top: 50%;
+
+/* ---------- wave family (aurora / nebula / clouds) ---------- */
+
+.bg-decor-blob {
+  position: absolute;
+  width: 60vw;
+  height: 60vw;
+  max-width: 500px;
+  max-height: 500px;
+  border-radius: 50%;
+  filter: blur(50px);
+  animation-name: bg-drift;
+  animation-timing-function: ease-in-out;
+  animation-iteration-count: infinite;
+  opacity: 0.35;
 }
-.bg-decor--stars .bg-decor-item:nth-child(3n + 2) {
-  top: 75%;
+
+.bg-decor--clouds .bg-decor-blob {
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.8), rgba(255, 255, 255, 0));
+  opacity: 0.5;
+  height: 30vw;
+  border-radius: 50%;
+}
+
+.bg-decor--aurora .bg-decor-blob {
+  background: linear-gradient(90deg, rgba(95, 224, 196, 0.5), rgba(127, 156, 255, 0.4), rgba(198, 127, 239, 0.4));
+  height: 25vh;
+  width: 140vw;
+  max-width: none;
+  border-radius: 50%;
+  filter: blur(60px);
+}
+
+.bg-decor--nebula .bg-decor-blob {
+  background: radial-gradient(circle, var(--nebula-color, rgba(160, 100, 255, 0.5)), rgba(0, 0, 0, 0));
+  opacity: 0.45;
+}
+
+.bg-decor--nebula .bg-decor-blob:nth-child(1) {
+  --nebula-color: rgba(79, 224, 255, 0.4);
+}
+.bg-decor--nebula .bg-decor-blob:nth-child(2) {
+  --nebula-color: rgba(198, 127, 239, 0.4);
+}
+.bg-decor--nebula .bg-decor-blob:nth-child(3) {
+  --nebula-color: rgba(255, 111, 196, 0.35);
+}
+
+@keyframes bg-drift {
+  0%,
+  100% {
+    transform: translate(0, 0) scale(1);
+  }
+  50% {
+    transform: translate(6%, -4%) scale(1.08);
+  }
+}
+
+/* ---------- flash family (lightning / glitch) ---------- */
+
+.bg-decor-flash {
+  position: absolute;
+  inset: 0;
+  background: rgba(255, 255, 255, 0.5);
+  opacity: 0;
+  animation-name: bg-lightning-flash;
+  animation-timing-function: ease-out;
+  animation-iteration-count: infinite;
+}
+
+.bg-decor--glitch .bg-decor-flash {
+  background: linear-gradient(0deg, transparent 48%, rgba(0, 247, 255, 0.15) 49%, rgba(255, 0, 200, 0.12) 50%, transparent 52%);
+  animation-name: bg-glitch-flash;
+}
+
+@keyframes bg-lightning-flash {
+  0%,
+  92%,
+  100% {
+    opacity: 0;
+  }
+  93% {
+    opacity: 0.5;
+  }
+  94% {
+    opacity: 0.05;
+  }
+  95% {
+    opacity: 0.35;
+  }
+  96%,
+  99% {
+    opacity: 0;
+  }
+}
+
+@keyframes bg-glitch-flash {
+  0%,
+  95%,
+  100% {
+    opacity: 0;
+    transform: translateY(0);
+  }
+  96% {
+    opacity: 0.7;
+    transform: translateY(2px);
+  }
+  97% {
+    opacity: 0.2;
+    transform: translateY(-3px);
+  }
+  98% {
+    opacity: 0.5;
+    transform: translateY(1px);
+  }
+}
+
+/* ---------- gears ---------- */
+
+.bg-decor-gear {
+  position: absolute;
+  width: 220px;
+  height: 220px;
+  border-radius: 50%;
+  border: 18px dashed rgba(232, 178, 62, 0.15);
+  animation-name: bg-rotate;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+}
+
+.bg-decor-gear--rev {
+  animation-direction: reverse;
+  width: 150px;
+  height: 150px;
+}
+
+@keyframes bg-rotate {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
 }

@@ -1,29 +1,35 @@
 import { createContext, useCallback, useContext, useMemo, useRef, useState } from 'react';
 import type { ReactNode } from 'react';
 import { DEFAULT_THEME_ID, THEMES, getThemeById } from './themes';
+import { checkSecretUnlock, isWheelExhausted, readUnlockedIds, spinWheel, writeUnlockedIds } from './unlock';
 import type { GameTheme } from './types';
 
-export type ThemeMode = 'manual' | 'auto';
+interface MoveInfo {
+  lineCount: number;
+  combo: number;
+}
 
 interface ThemeContextValue {
   theme: GameTheme;
   themeId: string;
-  mode: ThemeMode;
   isTransitioning: boolean;
   allThemes: GameTheme[];
   unlockedIds: Set<string>;
-  setTheme: (id: string) => void;
-  nextTheme: () => void;
-  setMode: (mode: ThemeMode) => void;
-  /** Called by the score-driven auto system; only applied when safe (no drag/animation in flight). */
-  requestAutoThemeForScore: (score: number) => void;
   isUnlocked: (id: string) => boolean;
+  setTheme: (id: string) => void;
+  /** Called after a move fully settles; rotates to the next unlocked theme
+   *  when the move cleared at least one line, and silently checks the
+   *  secret theme's hidden unlock condition. Never mid-drag or mid-animation. */
+  onMoveSettled: (info: MoveInfo) => void;
+  /** Spins the rarity-weighted wheel; returns the id of the newly unlocked
+   *  theme, or null if every wheel-eligible theme is already unlocked. */
+  spin: () => string | null;
+  wheelExhausted: boolean;
 }
 
 const ThemeContext = createContext<ThemeContextValue | null>(null);
 
 const STORAGE_KEY = 'blockblast:themeId';
-const MODE_KEY = 'blockblast:themeMode';
 const BEST_KEY = 'blockblast:bestScore';
 
 function readStoredTheme(): string {
@@ -31,14 +37,6 @@ function readStoredTheme(): string {
     return localStorage.getItem(STORAGE_KEY) ?? DEFAULT_THEME_ID;
   } catch {
     return DEFAULT_THEME_ID;
-  }
-}
-
-function readStoredMode(): ThemeMode {
-  try {
-    return (localStorage.getItem(MODE_KEY) as ThemeMode) ?? 'auto';
-  } catch {
-    return 'auto';
   }
 }
 
@@ -60,7 +58,7 @@ export function writeBestScore(score: number) {
 
 export function ThemeProvider({ children }: { children: ReactNode }) {
   const [themeId, setThemeId] = useState(() => readStoredTheme());
-  const [mode, setModeState] = useState<ThemeMode>(() => readStoredMode());
+  const [unlockedIds, setUnlockedIds] = useState<Set<string>>(() => readUnlockedIds());
   const [isTransitioning, setIsTransitioning] = useState(false);
   const transitionTimer = useRef<number | null>(null);
 
@@ -78,58 +76,62 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
 
   const setTheme = useCallback(
     (id: string) => {
+      if (!unlockedIds.has(id)) return;
       applyTheme(id);
     },
-    [applyTheme],
+    [applyTheme, unlockedIds],
   );
 
-  const setMode = useCallback((next: ThemeMode) => {
-    setModeState(next);
-    try {
-      localStorage.setItem(MODE_KEY, next);
-    } catch {
-      // ignore
-    }
+  const unlock = useCallback((id: string) => {
+    setUnlockedIds((prev) => {
+      if (prev.has(id)) return prev;
+      const next = new Set(prev);
+      next.add(id);
+      writeUnlockedIds(next);
+      return next;
+    });
   }, []);
 
-  const nextTheme = useCallback(() => {
-    const idx = THEMES.findIndex((t) => t.id === themeId);
-    const next = THEMES[(idx + 1) % THEMES.length];
-    applyTheme(next.id);
-  }, [themeId, applyTheme]);
-
-  // All themes are unlocked in this first version; the score gate is kept
-  // for future unlock UI without touching gameplay.
-  const unlockedIds = useMemo(() => new Set(THEMES.map((t) => t.id)), []);
   const isUnlocked = useCallback((id: string) => unlockedIds.has(id), [unlockedIds]);
 
-  const requestAutoThemeForScore = useCallback(
-    (score: number) => {
-      if (mode !== 'auto') return;
-      let candidate = THEMES[0];
-      for (const t of THEMES) {
-        if (score >= t.unlockScore && unlockedIds.has(t.id)) candidate = t;
-      }
-      if (candidate.id !== themeId) applyTheme(candidate.id);
+  const onMoveSettled = useCallback(
+    ({ lineCount, combo }: MoveInfo) => {
+      if (checkSecretUnlock({ lineCount, combo })) unlock('secret');
+
+      if (lineCount <= 0) return;
+      // Rotate to the next unlocked theme, in stable registry order, so the
+      // world visibly changes each time a line is cleared.
+      const unlockedInOrder = THEMES.filter((t) => unlockedIds.has(t.id));
+      if (unlockedInOrder.length <= 1) return;
+      const idx = unlockedInOrder.findIndex((t) => t.id === themeId);
+      const next = unlockedInOrder[(idx + 1 + unlockedInOrder.length) % unlockedInOrder.length];
+      if (next.id !== themeId) applyTheme(next.id);
     },
-    [mode, themeId, applyTheme, unlockedIds],
+    [themeId, unlockedIds, applyTheme, unlock],
   );
+
+  const spin = useCallback((): string | null => {
+    const won = spinWheel(unlockedIds);
+    if (won) unlock(won);
+    return won;
+  }, [unlockedIds, unlock]);
+
+  const wheelExhausted = useMemo(() => isWheelExhausted(unlockedIds), [unlockedIds]);
 
   const value = useMemo<ThemeContextValue>(
     () => ({
       theme: getThemeById(themeId),
       themeId,
-      mode,
       isTransitioning,
       allThemes: THEMES,
       unlockedIds,
-      setTheme,
-      nextTheme,
-      setMode,
-      requestAutoThemeForScore,
       isUnlocked,
+      setTheme,
+      onMoveSettled,
+      spin,
+      wheelExhausted,
     }),
-    [themeId, mode, isTransitioning, unlockedIds, setTheme, nextTheme, setMode, requestAutoThemeForScore, isUnlocked],
+    [themeId, isTransitioning, unlockedIds, isUnlocked, setTheme, onMoveSettled, spin, wheelExhausted],
   );
 
   return <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>;
