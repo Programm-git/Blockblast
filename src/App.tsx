@@ -8,8 +8,9 @@ import { SecretOverlay } from './components/SecretOverlay';
 import { StartScreen } from './components/StartScreen';
 import { GameScreen } from './components/GameScreen';
 import { ThemeIndexScreen } from './components/ThemeIndexScreen';
+import { WheelScreen } from './components/WheelScreen';
 
-type Screen = 'start' | 'game' | 'index';
+type Screen = 'start' | 'game' | 'index' | 'wheel';
 
 function AppShell() {
   const { theme } = useTheme();
@@ -23,9 +24,16 @@ function AppShell() {
       {isSecret ? <SecretOverlay reducedMotion={reducedMotion} /> : <BackgroundDecor theme={theme} reducedMotion={reducedMotion} />}
       <div className="app-screen">
         {screen === 'start' && (
-          <StartScreen theme={theme} best={best} onPlay={() => setScreen('game')} onIndex={() => setScreen('index')} />
+          <StartScreen
+            theme={theme}
+            best={best}
+            onPlay={() => setScreen('game')}
+            onIndex={() => setScreen('index')}
+            onWheel={() => setScreen('wheel')}
+          />
         )}
         {screen === 'index' && <ThemeIndexScreen onBack={() => setScreen('start')} />}
+        {screen === 'wheel' && <WheelScreen onBack={() => setScreen('start')} />}
         {screen === 'game' && (
           <GameScreen
             onMenu={() => {

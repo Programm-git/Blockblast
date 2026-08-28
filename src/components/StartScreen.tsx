@@ -6,6 +6,7 @@ interface StartScreenProps {
   best: number;
   onPlay: () => void;
   onIndex: () => void;
+  onWheel: () => void;
 }
 
 const DECOR_SHAPES = [
@@ -17,7 +18,7 @@ const DECOR_SHAPES = [
   { top: '40%', left: '90%', size: 26, rot: -10, colorSlot: 5 },
 ];
 
-export function StartScreen({ theme, best, onPlay, onIndex }: StartScreenProps) {
+export function StartScreen({ theme, best, onPlay, onIndex, onWheel }: StartScreenProps) {
   return (
     <div className="start-screen">
       <div className="start-decor" aria-hidden="true">
@@ -52,8 +53,11 @@ export function StartScreen({ theme, best, onPlay, onIndex }: StartScreenProps) 
         <button className="btn btn--primary btn--big" onClick={onPlay}>
           SPIELEN
         </button>
-        <button className="btn btn--ghost" onClick={onIndex}>
+        <button className="btn btn--ghost btn--big" onClick={onIndex}>
           INDEX
+        </button>
+        <button className="btn btn--ghost btn--big" onClick={onWheel}>
+          GLÜCKSRAD
         </button>
       </div>
     </div>
