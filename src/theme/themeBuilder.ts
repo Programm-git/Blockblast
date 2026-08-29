@@ -52,19 +52,40 @@ const MATERIAL_BASE_GLOW: Record<MaterialType, number> = {
   secret: 0.45,
 };
 
-/** How long a cleared block's own dissolve animation takes, per material.
- *  Materials with a bespoke clear effect (glitch's digital break-up, secret's
- *  data-line dissolve) need more time on screen than the default scale/fade,
- *  so the game must hold the board — and delay the next theme switch — for
- *  exactly this long rather than a single fixed duration for every theme. */
+/** How long a cleared block's own dissolve animation takes, keyed by theme
+ *  id. Themes with a bespoke clear effect need more time on screen than the
+ *  default scale/fade, so the game must hold the board — and delay the next
+ *  theme switch — for exactly this long rather than one fixed duration for
+ *  every theme. Falls back to DEFAULT_CLEAR_MS for every theme not listed. */
 export const DEFAULT_CLEAR_MS = 280;
-const MATERIAL_CLEAR_MS: Partial<Record<MaterialType, number>> = {
-  glitch: 480,
+export const CLEAR_ANIMATION_MS: Partial<Record<string, number>> = {
   secret: 420,
+  // Exotic
+  blackhole: 560,
+  quantum: 520,
+  liquidchrome: 560,
+  prism: 600,
+  glitchexotic: 480,
+  zerogravity: 580,
+  darkmatter: 560,
+  holographic: 540,
+  eclipse: 580,
+  infinity: 600,
+  // Legendary
+  galaxycore: 620,
+  heavenearth: 560,
+  infernokingdom: 540,
+  cosmicocean: 580,
+  goldenempire: 600,
+  worldtree: 580,
+  dimensionalrift: 520,
+  godstorm: 540,
+  eternalicepalace: 560,
+  universe: 680,
 };
 
-export function getClearDurationMs(material: MaterialType): number {
-  return MATERIAL_CLEAR_MS[material] ?? DEFAULT_CLEAR_MS;
+export function getClearDurationMs(theme: Pick<GameTheme, 'id'>): number {
+  return CLEAR_ANIMATION_MS[theme.id] ?? DEFAULT_CLEAR_MS;
 }
 
 function layersForRarity(rarity: Rarity): number {

@@ -14,6 +14,7 @@ import { DragGhost } from './DragGhost';
 import { ScoreBar } from './ScoreBar';
 import { ComboPopup } from './ComboPopup';
 import { ParticleLayer } from './ParticleLayer';
+import { LegendaryExoticClearFX } from './LegendaryExoticClearFX';
 import { GameOverScreen } from './GameOverScreen';
 
 interface GameScreenProps {
@@ -37,7 +38,7 @@ export function GameScreen({ onMenu }: GameScreenProps) {
   const { state, placePiece, reset } = useGameEngine(
     theme.blocks.colors.length,
     onMoveSettled,
-    getClearDurationMs(theme.blocks.material),
+    getClearDurationMs(theme),
   );
 
   const computeTargetOrigin = useCallback((shape: Shape, clientX: number, clientY: number) => {
@@ -106,6 +107,7 @@ export function GameScreen({ onMenu }: GameScreenProps) {
       <div className="game-board-area">
         <Board ref={boardRef} theme={theme} board={state.board} ghost={ghost} clearingCells={state.clearingCells} />
         <ParticleLayer event={state.lastClearEvent} theme={theme} reducedMotion={reducedMotion} />
+        <LegendaryExoticClearFX event={state.lastClearEvent} theme={theme} reducedMotion={reducedMotion} />
         <ComboPopup event={state.lastClearEvent} theme={theme} />
       </div>
 

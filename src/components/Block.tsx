@@ -16,17 +16,21 @@ function BlockImpl({ theme, colorIndex, variant = 'placed' }: BlockProps) {
   const style: CSSProperties & Record<string, string> = {
     '--block-color': color,
   };
-  // The clear animation's own CSS duration is a generic default; when this
-  // theme's material has a bespoke, longer dissolve (glitch, secret) the
-  // game engine already holds the board open for that long (getClearDurationMs
-  // drives its setTimeout too), so the animation itself must stretch to
-  // match rather than finish early and sit invisible for the remainder.
+  // The clear animation's own CSS duration is a generic default; themes with
+  // a bespoke, longer dissolve (see CLEAR_ANIMATION_MS) hold the board open
+  // for that long too (getClearDurationMs drives the game engine's setTimeout
+  // as well), so the animation itself must stretch to match rather than
+  // finish early and sit invisible for the remainder.
   if (variant === 'clearing') {
-    style.animationDuration = `${getClearDurationMs(theme.blocks.material)}ms`;
+    style.animationDuration = `${getClearDurationMs(theme)}ms`;
   }
+  // block--theme-<id> is a no-op class for most themes; Block.css only
+  // defines rules for it on the handful of Legendary/Exotic themes with a
+  // bespoke clear or landing animation, so every other theme just falls
+  // through to the generic material/variant styling untouched.
   return (
     <div
-      className={`block block--${theme.blocks.material} block--${variant}`}
+      className={`block block--${theme.blocks.material} block--${variant} block--theme-${theme.id}`}
       style={style}
       aria-hidden="true"
     />
