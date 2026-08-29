@@ -1,4 +1,4 @@
-import { useCallback, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import type { PointerEvent as ReactPointerEvent } from 'react';
 import { useGameEngine } from '../game/useGameEngine';
 import { canPlaceShapeAt, shapeBounds } from '../game/engine';
@@ -6,6 +6,7 @@ import { BOARD_SIZE } from '../game/types';
 import type { Shape } from '../game/types';
 import { useTheme } from '../theme/ThemeContext';
 import { getClearDurationMs } from '../theme/themeBuilder';
+import { recordPlayedToday } from '../theme/streak';
 import { useReducedMotion } from '../hooks/useReducedMotion';
 import { Board } from './Board';
 import type { GhostPreview } from './Board';
@@ -40,6 +41,10 @@ export function GameScreen({ onMenu }: GameScreenProps) {
     onMoveSettled,
     getClearDurationMs(theme),
   );
+
+  useEffect(() => {
+    recordPlayedToday();
+  }, []);
 
   const computeTargetOrigin = useCallback((shape: Shape, clientX: number, clientY: number) => {
     const el = boardRef.current;

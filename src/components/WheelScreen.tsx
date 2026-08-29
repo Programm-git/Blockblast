@@ -1,4 +1,5 @@
 import { Wheel } from './Wheel';
+import { StreakCalendar } from './StreakCalendar';
 import './WheelScreen.css';
 
 interface WheelScreenProps {
@@ -12,6 +13,7 @@ export function WheelScreen({ onBack }: WheelScreenProps) {
         ← ZURÜCK
       </button>
       <Wheel />
+      <StreakCalendar />
     </div>
   );
 }
