@@ -13,8 +13,7 @@ import {
   scoreForPlacement,
 } from './engine';
 import { readBestScore, writeBestScore } from '../theme/ThemeContext';
-
-const CLEAR_ANIMATION_MS = 280;
+import { DEFAULT_CLEAR_MS } from '../theme/themeBuilder';
 
 export interface ClearEvent {
   key: number;
@@ -63,7 +62,11 @@ export interface MoveSettledInfo {
   combo: number;
 }
 
-export function useGameEngine(colorCount: number, onMoveSettled?: (info: MoveSettledInfo) => void) {
+export function useGameEngine(
+  colorCount: number,
+  onMoveSettled?: (info: MoveSettledInfo) => void,
+  clearAnimationMs: number = DEFAULT_CLEAR_MS,
+) {
   const [state, setState] = useState<GameEngineState>(() => makeInitialState(colorCount));
   const clearTimer = useRef<number | null>(null);
   const eventCounter = useRef(0);
@@ -168,7 +171,7 @@ export function useGameEngine(colorCount: number, onMoveSettled?: (info: MoveSet
               lastClearEvent: clearEvent,
             };
           });
-        }, CLEAR_ANIMATION_MS);
+        }, clearAnimationMs);
 
         return {
           ...prev,
@@ -181,7 +184,7 @@ export function useGameEngine(colorCount: number, onMoveSettled?: (info: MoveSet
       });
       return didPlace;
     },
-    [colorCount, onMoveSettled],
+    [colorCount, onMoveSettled, clearAnimationMs],
   );
 
   // Permanent game-over watchdog: recomputed fresh from board+tray on every

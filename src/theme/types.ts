@@ -50,7 +50,6 @@ export type MaterialType =
   | 'obsidian'
   | 'wood'
   | 'holo'
-  | 'obsidian'
   | 'glitch'
   | 'secret';
 

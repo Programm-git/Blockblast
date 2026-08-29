@@ -5,6 +5,7 @@ import { canPlaceShapeAt, shapeBounds } from '../game/engine';
 import { BOARD_SIZE } from '../game/types';
 import type { Shape } from '../game/types';
 import { useTheme } from '../theme/ThemeContext';
+import { getClearDurationMs } from '../theme/themeBuilder';
 import { useReducedMotion } from '../hooks/useReducedMotion';
 import { Board } from './Board';
 import type { GhostPreview } from './Board';
@@ -33,7 +34,11 @@ export function GameScreen({ onMenu }: GameScreenProps) {
   const boardRef = useRef<HTMLDivElement | null>(null);
   const [drag, setDrag] = useState<DragState | null>(null);
 
-  const { state, placePiece, reset } = useGameEngine(theme.blocks.colors.length, onMoveSettled);
+  const { state, placePiece, reset } = useGameEngine(
+    theme.blocks.colors.length,
+    onMoveSettled,
+    getClearDurationMs(theme.blocks.material),
+  );
 
   const computeTargetOrigin = useCallback((shape: Shape, clientX: number, clientY: number) => {
     const el = boardRef.current;

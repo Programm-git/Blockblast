@@ -52,6 +52,21 @@ const MATERIAL_BASE_GLOW: Record<MaterialType, number> = {
   secret: 0.45,
 };
 
+/** How long a cleared block's own dissolve animation takes, per material.
+ *  Materials with a bespoke clear effect (glitch's digital break-up, secret's
+ *  data-line dissolve) need more time on screen than the default scale/fade,
+ *  so the game must hold the board — and delay the next theme switch — for
+ *  exactly this long rather than a single fixed duration for every theme. */
+export const DEFAULT_CLEAR_MS = 280;
+const MATERIAL_CLEAR_MS: Partial<Record<MaterialType, number>> = {
+  glitch: 480,
+  secret: 420,
+};
+
+export function getClearDurationMs(material: MaterialType): number {
+  return MATERIAL_CLEAR_MS[material] ?? DEFAULT_CLEAR_MS;
+}
+
 function layersForRarity(rarity: Rarity): number {
   switch (rarity) {
     case 'common':
