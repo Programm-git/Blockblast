@@ -13,6 +13,13 @@ const PARTICLE_DECORS = new Set([
 ]);
 const WAVE_DECORS = new Set(['aurora', 'nebula', 'clouds']);
 const FLASH_DECORS = new Set(['lightning', 'glitch']);
+/** Streak themes fly their milestone number around the background instead of
+ *  an abstract particle, so the day count itself is the decor. */
+const DIGIT_DECOR_LABEL: Partial<Record<string, string>> = {
+  streak7: '7',
+  streak14: '14',
+  streak31: '31',
+};
 
 const BASE_COUNT = 9;
 
@@ -36,6 +43,29 @@ export function BackgroundDecor({ theme, reducedMotion }: BackgroundDecorProps) 
   );
 
   if (decor === 'none') return null;
+
+  const digitLabel = DIGIT_DECOR_LABEL[decor];
+  if (digitLabel) {
+    return (
+      <div className="bg-decor bg-decor--digits" aria-hidden="true">
+        {items.map((item) => (
+          <span
+            key={item.id}
+            className="bg-decor-digit"
+            style={{
+              left: `${item.left}%`,
+              fontSize: item.size + 18,
+              animationDuration: reducedMotion ? '0s' : `${item.duration}s`,
+              animationDelay: `${item.delay}s`,
+              animationPlayState: reducedMotion ? 'paused' : 'running',
+            }}
+          >
+            {digitLabel}
+          </span>
+        ))}
+      </div>
+    );
+  }
 
   if (PARTICLE_DECORS.has(decor)) {
     return (

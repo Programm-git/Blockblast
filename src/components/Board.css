@@ -79,6 +79,31 @@
   }
 }
 
+.board-outer--streak {
+  border-width: 2px;
+  box-shadow:
+    0 14px 40px rgba(0, 0, 0, 0.4),
+    0 0 0 5px rgba(255, 138, 61, 0.16),
+    0 0 30px 4px rgba(255, 90, 30, 0.45);
+}
+
+.board-outer-glow--streak {
+  background: conic-gradient(from 0deg, #ffd75e, #ff5a1e, #ff2e1e, #ffd75e);
+  animation: board-streak-flicker 3.2s ease-in-out infinite;
+}
+
+@keyframes board-streak-flicker {
+  0%,
+  100% {
+    opacity: 0.5;
+    transform: rotate(0deg) scale(1);
+  }
+  50% {
+    opacity: 0.85;
+    transform: rotate(180deg) scale(1.04);
+  }
+}
+
 .board-outer--secret {
   border-color: #1c1c1f;
   box-shadow:

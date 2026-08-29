@@ -57,6 +57,7 @@ export const Board = forwardRef<HTMLDivElement, BoardProps>(function Board(
     <div className={`board-outer board-outer--${frame} ${isSecret ? 'board-outer--secret' : ''}`} ref={ref}>
       {frame === 'premium' && <div className="board-outer-glow" aria-hidden="true" />}
       {frame === 'exotic' && <div className="board-outer-glow board-outer-glow--exotic" aria-hidden="true" />}
+      {frame === 'streak' && <div className="board-outer-glow board-outer-glow--streak" aria-hidden="true" />}
       <div className="board-grid">{cells}</div>
       {isSecret && <div className="board-secret-scanline" aria-hidden="true" />}
     </div>

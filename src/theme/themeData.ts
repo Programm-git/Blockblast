@@ -3,6 +3,7 @@ import type { CompactTheme } from './themeBuilder';
 const WHEEL = { type: 'wheel' as const };
 const START = { type: 'start' as const };
 const SECRET = { type: 'secret' as const };
+const streakDays = (days: number) => ({ type: 'streak' as const, days });
 
 /**
  * Compact source data for all 51 themes. themeBuilder.buildTheme() expands
@@ -389,5 +390,26 @@ export const THEME_DATA: CompactTheme[] = [
     bg: ['#000000', '#050507'], surface: '#0a0a0d', accent: '#00f7ff',
     blocks: ['#0a0a0a', '#1a0a2c', '#0a2c2c', '#e8e8e8', '#0a0a0a', '#1a0a2c'],
     decor: 'glitch', material: 'secret', particle: 'binary', dark: true,
+  },
+
+  // ---------- STREAK (below Secret; never on the wheel — earned only by
+  // keeping the play streak alive) ----------
+  {
+    id: 'streak7', name: 'Streak 7', rarity: 'streak', unlock: streakDays(7),
+    bg: ['#1c0e04', '#3a1c08', '#5c2e0c'], surface: '#241206', accent: '#ff8a3d',
+    blocks: ['#ff8a3d', '#ffb35e', '#ff5a1e', '#ffd88a', '#e8600a', '#fff0d0'],
+    decor: 'streak7', material: 'glow', particle: 'ember', dark: true,
+  },
+  {
+    id: 'streak14', name: 'Streak 14', rarity: 'streak', unlock: streakDays(14),
+    bg: ['#1a0604', '#3c0c08', '#6c1206'], surface: '#200806', accent: '#ff5a2e',
+    blocks: ['#ff5a2e', '#ff2e1e', '#ffb23e', '#ff8a3d', '#c9160a', '#ffd88a'],
+    decor: 'streak14', material: 'glow', particle: 'ember', dark: true,
+  },
+  {
+    id: 'streak31', name: 'Streak 31', rarity: 'streak', unlock: streakDays(31),
+    bg: ['#140402', '#3a0a04', '#7a1a04'], surface: '#1c0604', accent: '#ffd75e',
+    blocks: ['#ffd75e', '#ff9c1e', '#ff5a1e', '#fff6d8', '#ff2e1e', '#ffb23e'],
+    decor: 'streak31', material: 'glow', particle: 'ember', dark: true,
   },
 ];

@@ -33,7 +33,10 @@ export function writeUnlockedIds(ids: Set<string>) {
  * every wheel-eligible theme is already unlocked.
  */
 export function spinWheel(unlockedIds: Set<string>): string | null {
-  const wheelThemes = THEMES.filter((t) => t.unlock.type !== 'start' && !unlockedIds.has(t.id));
+  // Streak themes (like the starting theme) are never wheel-eligible — they
+  // only unlock by hitting a play-streak milestone, so both are excluded
+  // here rather than just 'start'.
+  const wheelThemes = THEMES.filter((t) => t.unlock.type !== 'start' && t.unlock.type !== 'streak' && !unlockedIds.has(t.id));
   if (wheelThemes.length === 0) return null;
 
   const tiersPresent = new Set(wheelThemes.map((t) => t.rarity));
@@ -58,7 +61,18 @@ export function spinWheel(unlockedIds: Set<string>): string | null {
 }
 
 export function isWheelExhausted(unlockedIds: Set<string>): boolean {
-  return THEMES.every((t) => t.unlock.type === 'start' || unlockedIds.has(t.id));
+  return THEMES.every((t) => t.unlock.type === 'start' || t.unlock.type === 'streak' || unlockedIds.has(t.id));
+}
+
+/**
+ * Themes with a `{ type: 'streak', days }` unlock rule that the current
+ * streak has reached but aren't unlocked yet. Purely a query — callers
+ * decide what to do with the ids (ThemeContext unlocks them).
+ */
+export function checkStreakUnlocks(streakDays: number, unlockedIds: Set<string>): string[] {
+  return THEMES.filter(
+    (t) => t.unlock.type === 'streak' && streakDays >= t.unlock.days && !unlockedIds.has(t.id),
+  ).map((t) => t.id);
 }
 
 /**

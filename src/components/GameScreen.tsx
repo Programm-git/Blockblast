@@ -31,7 +31,7 @@ interface DragState {
 }
 
 export function GameScreen({ onMenu }: GameScreenProps) {
-  const { theme, onMoveSettled } = useTheme();
+  const { theme, onMoveSettled, checkStreakUnlocks } = useTheme();
   const reducedMotion = useReducedMotion();
   const boardRef = useRef<HTMLDivElement | null>(null);
   const [drag, setDrag] = useState<DragState | null>(null);
@@ -44,6 +44,11 @@ export function GameScreen({ onMenu }: GameScreenProps) {
 
   useEffect(() => {
     recordPlayedToday();
+    checkStreakUnlocks();
+    // Runs once per mount (a game session starting) — recordPlayedToday is
+    // idempotent and checkStreakUnlocks is a cheap read-and-maybe-unlock, so
+    // there's no need to re-run this on every render.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const computeTargetOrigin = useCallback((shape: Shape, clientX: number, clientY: number) => {

@@ -1,6 +1,6 @@
 import type { Rarity } from './types';
 
-export const RARITY_ORDER: Rarity[] = ['common', 'rare', 'epic', 'mythic', 'legendary', 'exotic', 'secret'];
+export const RARITY_ORDER: Rarity[] = ['common', 'rare', 'epic', 'mythic', 'legendary', 'exotic', 'secret', 'streak'];
 
 export const RARITY_LABEL: Record<Rarity, string> = {
   common: 'Common',
@@ -10,6 +10,7 @@ export const RARITY_LABEL: Record<Rarity, string> = {
   legendary: 'Legendary',
   exotic: 'Exotic',
   secret: 'Secret',
+  streak: 'Streak',
 };
 
 /** How many of each rarity exist, driving the wheel's odds. */
@@ -21,9 +22,14 @@ export const RARITY_COUNT: Record<Rarity, number> = {
   legendary: 10,
   exotic: 10,
   secret: 1,
+  streak: 3,
 };
 
-/** Relative pick weight per rarity *tier* on the wheel (not per-theme). Sums to exactly 100. */
+/** Relative pick weight per rarity *tier* on the wheel (not per-theme). Sums
+ *  to exactly 100 across the *wheel-eligible* rarities. Streak is never
+ *  wheel-eligible (its themes only unlock via a play-streak milestone), so
+ *  its weight is unused at runtime — kept at 0 purely so this stays a total
+ *  Record<Rarity, number>. */
 export const RARITY_WHEEL_WEIGHT: Record<Rarity, number> = {
   common: 42,
   rare: 27,
@@ -32,6 +38,7 @@ export const RARITY_WHEEL_WEIGHT: Record<Rarity, number> = {
   legendary: 4.5,
   exotic: 3,
   secret: 0.5,
+  streak: 0,
 };
 
 /**
@@ -47,7 +54,7 @@ export interface RarityIntensity {
   decorCountMul: number;
   /** >1 = faster/livelier background motion, <1 = calmer. */
   animSpeedMul: number;
-  boardFrame: 'plain' | 'accent' | 'glow' | 'ornate' | 'premium' | 'exotic';
+  boardFrame: 'plain' | 'accent' | 'glow' | 'ornate' | 'premium' | 'exotic' | 'streak';
 }
 
 export const RARITY_INTENSITY: Record<Rarity, RarityIntensity> = {
@@ -65,6 +72,10 @@ export const RARITY_INTENSITY: Record<Rarity, RarityIntensity> = {
   // it renders through its own dedicated, calmer, mostly-still pipeline
   // (see SecretOverlay / the `secret` material) rather than "more sparkle".
   secret: { glowMul: 1, highlightMul: 1, particleCountMul: 1, decorCountMul: 1, animSpeedMul: 1, boardFrame: 'premium' },
+  // Streak themes are an achievement reward, not a rarity escalation — kept
+  // at a steady, moderate intensity (not "more Secret", not "more Legendary")
+  // with their own flame-colored board frame and floating-digit background.
+  streak: { glowMul: 1.2, highlightMul: 1.1, particleCountMul: 1, decorCountMul: 1, animSpeedMul: 1, boardFrame: 'streak' },
 };
 
 export function rarityIndex(rarity: Rarity): number {

@@ -21,11 +21,12 @@ function IndexCard({ theme, unlocked, active, onSelect }: { theme: GameTheme; un
         </div>
       );
     }
+    const lockLabel = theme.unlock.type === 'streak' ? `🔥 ${theme.unlock.days} TAGE STREAK` : '🔒 LOCKED';
     return (
       <div className={`index-card index-card--locked index-card--${theme.rarity}`}>
         <div className="index-card-silhouette" />
         <div className="index-card-name">{theme.name.toUpperCase()}</div>
-        <div className="index-card-lock">🔒 LOCKED</div>
+        <div className="index-card-lock">{lockLabel}</div>
       </div>
     );
   }
@@ -38,6 +39,7 @@ function IndexCard({ theme, unlocked, active, onSelect }: { theme: GameTheme; un
     >
       {(theme.rarity === 'mythic' || theme.rarity === 'legendary') && <div className="index-card-shine" />}
       {theme.rarity === 'exotic' && <div className="index-card-shine index-card-shine--exotic" />}
+      {theme.rarity === 'streak' && <div className="index-card-shine index-card-shine--streak" />}
       <div className="index-card-board" style={{ background: theme.board.background, borderColor: theme.board.border }}>
         {theme.blocks.colors.slice(0, 3).map((c, i) => (
           <span key={i} className="index-card-swatch" style={{ background: c, borderRadius: theme.blocks.borderRadius * 0.6 }} />

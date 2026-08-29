@@ -1,4 +1,4 @@
-export type Rarity = 'common' | 'rare' | 'epic' | 'mythic' | 'legendary' | 'exotic' | 'secret';
+export type Rarity = 'common' | 'rare' | 'epic' | 'mythic' | 'legendary' | 'exotic' | 'secret' | 'streak';
 
 export type ParticleType =
   | 'square'
@@ -37,7 +37,10 @@ export type DecorType =
   | 'sparkle'
   | 'ash'
   | 'nebula'
-  | 'glitch';
+  | 'glitch'
+  | 'streak7'
+  | 'streak14'
+  | 'streak31';
 
 export type MaterialType =
   | 'matte'
@@ -57,7 +60,10 @@ export type MaterialType =
 export type UnlockRule =
   | { type: 'start' }
   | { type: 'wheel' }
-  | { type: 'secret' };
+  | { type: 'secret' }
+  /** Unlocked automatically once the player's play streak (see theme/streak.ts)
+   *  reaches `days`. Never offered by the wheel. */
+  | { type: 'streak'; days: number };
 
 export interface GameTheme {
   id: string;

@@ -1,7 +1,8 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import type { ReactNode } from 'react';
 import { DEFAULT_THEME_ID, THEMES, getThemeById } from './themes';
-import { checkSecretUnlock, isWheelExhausted, readUnlockedIds, spinWheel, writeUnlockedIds } from './unlock';
+import { checkSecretUnlock, checkStreakUnlocks, isWheelExhausted, readUnlockedIds, spinWheel, writeUnlockedIds } from './unlock';
+import { computeStreak, readPlayedDates } from './streak';
 import type { GameTheme } from './types';
 
 interface MoveInfo {
@@ -28,6 +29,10 @@ interface ThemeContextValue {
    *  theme, or null if every wheel-eligible theme is already unlocked. */
   spin: () => string | null;
   wheelExhausted: boolean;
+  /** Unlocks any Streak-rarity theme whose day threshold the current play
+   *  streak has reached. Cheap and idempotent — safe to call on every game
+   *  session; never touched by the wheel. */
+  checkStreakUnlocks: () => void;
 }
 
 const ThemeContext = createContext<ThemeContextValue | null>(null);
@@ -136,6 +141,11 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
 
   const wheelExhausted = useMemo(() => isWheelExhausted(unlockedIds), [unlockedIds]);
 
+  const checkStreakUnlocksFn = useCallback(() => {
+    const streak = computeStreak(readPlayedDates());
+    for (const id of checkStreakUnlocks(streak, unlockedIds)) unlock(id);
+  }, [unlockedIds, unlock]);
+
   useEffect(() => {
     return () => {
       if (transitionTimer.current) window.clearTimeout(transitionTimer.current);
@@ -155,8 +165,9 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
       onMoveSettled,
       spin,
       wheelExhausted,
+      checkStreakUnlocks: checkStreakUnlocksFn,
     }),
-    [themeId, isTransitioning, unlockedIds, isUnlocked, setTheme, onMoveSettled, spin, wheelExhausted],
+    [themeId, isTransitioning, unlockedIds, isUnlocked, setTheme, onMoveSettled, spin, wheelExhausted, checkStreakUnlocksFn],
   );
 
   return <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>;

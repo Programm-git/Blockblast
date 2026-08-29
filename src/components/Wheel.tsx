@@ -13,6 +13,9 @@ const SEGMENT_COLORS: Record<Rarity, string> = {
   legendary: '#f4c542',
   exotic: '#c75af6',
   secret: '#00f7ff',
+  // Unused by the wheel itself (Streak is excluded via WHEEL_RARITIES below)
+  // — present only so this stays a total Record<Rarity, string>.
+  streak: '#ff8a3d',
 };
 
 /** Exotic's wheel slice sweeps cyan -> violet -> pink instead of a flat
@@ -20,9 +23,10 @@ const SEGMENT_COLORS: Record<Rarity, string> = {
  *  the wheel itself (spec: distinct in kind, not just "more gold"). */
 const EXOTIC_SWEEP = ['#00f7ff', '#a855f7', '#ff6fc4'];
 
-// Wheel order excludes nothing — every rarity (Secret included, at its slim
-// 1% weight) is representable, sized proportionally to RARITY_WHEEL_WEIGHT.
-const WHEEL_RARITIES: Rarity[] = RARITY_ORDER;
+// Every rarity is representable except Streak — those themes only unlock via
+// a play-streak milestone and must never be a wheel outcome, so they're
+// excluded from the wheel entirely (no segment, no odds line, weight 0).
+const WHEEL_RARITIES: Rarity[] = RARITY_ORDER.filter((r) => r !== 'streak');
 
 interface Segment {
   rarity: Rarity;
