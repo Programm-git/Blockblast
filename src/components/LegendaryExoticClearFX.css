@@ -2,6 +2,7 @@
   position: absolute;
   pointer-events: none;
   z-index: 21;
+  will-change: transform, opacity, filter;
 }
 
 .clearfx--hero {

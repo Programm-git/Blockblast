@@ -1,4 +1,4 @@
-import { createContext, useCallback, useContext, useMemo, useRef, useState } from 'react';
+import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import type { ReactNode } from 'react';
 import { DEFAULT_THEME_ID, THEMES, getThemeById } from './themes';
 import { checkSecretUnlock, isWheelExhausted, readUnlockedIds, spinWheel, writeUnlockedIds } from './unlock';
@@ -64,6 +64,7 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
   const [unlockedIds, setUnlockedIds] = useState<Set<string>>(() => readUnlockedIds());
   const [isTransitioning, setIsTransitioning] = useState(false);
   const transitionTimer = useRef<number | null>(null);
+  const themeSwitchFrame = useRef<number | null>(null);
 
   const applyTheme = useCallback((id: string) => {
     setIsTransitioning(true);
@@ -110,7 +111,19 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
       const candidates = THEMES.filter((t) => unlockedIds.has(t.id) && t.id !== themeId);
       if (candidates.length === 0) return;
       const next = candidates[Math.floor(Math.random() * candidates.length)];
-      applyTheme(next.id);
+      // The board's own "row cleared, tray refilled" update just committed
+      // and is about to paint. Applying the new theme right here would land
+      // in the very same commit/paint (a full CSS-custom-property rewrite
+      // across the whole tree, plus the background decor re-rolling) —
+      // two expensive repaints stacked on one frame is exactly the stutter
+      // at the clear-animation-to-next-theme handoff. Pushing it one frame
+      // later lets the board's own update paint first, so the reskin lands
+      // as its own, separate — and smoother — frame.
+      if (themeSwitchFrame.current) window.cancelAnimationFrame(themeSwitchFrame.current);
+      themeSwitchFrame.current = window.requestAnimationFrame(() => {
+        themeSwitchFrame.current = null;
+        applyTheme(next.id);
+      });
     },
     [themeId, unlockedIds, applyTheme, unlock],
   );
@@ -122,6 +135,13 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
   }, [unlockedIds, unlock]);
 
   const wheelExhausted = useMemo(() => isWheelExhausted(unlockedIds), [unlockedIds]);
+
+  useEffect(() => {
+    return () => {
+      if (transitionTimer.current) window.clearTimeout(transitionTimer.current);
+      if (themeSwitchFrame.current) window.cancelAnimationFrame(themeSwitchFrame.current);
+    };
+  }, []);
 
   const value = useMemo<ThemeContextValue>(
     () => ({

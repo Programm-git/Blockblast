@@ -151,6 +151,16 @@ export function useGameEngine(
 
         if (clearTimer.current) window.clearTimeout(clearTimer.current);
         clearTimer.current = window.setTimeout(() => {
+          // onMoveSettled (which can trigger a theme switch — a full CSS
+          // custom-property rewrite across the whole tree) intentionally
+          // runs *after* this setState call returns, not inside the updater.
+          // An updater must stay pure; nesting another component's setState
+          // in here made React fold the board-clear commit and the theme
+          // switch's commit into a single frame, which is exactly the stutter
+          // at the animation-to-next-theme handoff: two expensive repaints
+          // landing on top of each other. Keeping them as separate calls
+          // lets ThemeContext defer its own heavy part to the next frame.
+          let settledInfo: MoveSettledInfo | null = null;
           setState((cur) => {
             const boardCleared = clearLines(boardAfterPlace, rows, cols);
             const filledTray = nextTray.every((s) => s === null) ? createTray(colorCount) : nextTray;
@@ -158,7 +168,7 @@ export function useGameEngine(
             const gameOver = computeIsGameOver(boardCleared, filledTray);
             const finalBest = Math.max(cur.best, finalScore);
             if (finalBest !== cur.best) writeBestScore(finalBest);
-            onMoveSettled?.({ score: finalScore, lineCount: clearEvent.lineCount, combo: clearEvent.combo });
+            settledInfo = { score: finalScore, lineCount: clearEvent.lineCount, combo: clearEvent.combo };
             return {
               ...cur,
               board: boardCleared,
@@ -171,6 +181,7 @@ export function useGameEngine(
               lastClearEvent: clearEvent,
             };
           });
+          if (settledInfo) onMoveSettled?.(settledInfo);
         }, clearAnimationMs);
 
         return {

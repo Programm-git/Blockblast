@@ -205,6 +205,11 @@
 
 .block--clearing {
   animation: block-clear 0.28s ease forwards;
+  /* Promote to its own compositor layer for the life of the animation so the
+   * browser doesn't have to do that promotion mid-flight — the moment that
+   * promotion lands on the same frame as the theme switch's full-tree
+   * repaint is exactly what read as a stutter. */
+  will-change: transform, opacity, filter;
 }
 
 /* Glitch material gets a digital break-up dissolve instead of the plain
