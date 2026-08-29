@@ -60,6 +60,25 @@
   }
 }
 
+.board-outer--exotic {
+  border-width: 2px;
+  box-shadow:
+    0 14px 40px rgba(0, 0, 0, 0.4),
+    0 0 0 5px rgba(0, 247, 255, 0.14),
+    0 0 34px 4px rgba(199, 90, 246, 0.45);
+}
+
+.board-outer-glow--exotic {
+  background: conic-gradient(from 0deg, #00f7ff, #a855f7, #ff6fc4, #00f7ff);
+  animation: board-exotic-spin 4.5s linear infinite;
+}
+
+@keyframes board-exotic-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
 .board-outer--secret {
   border-color: #1c1c1f;
   box-shadow:

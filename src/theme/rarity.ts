@@ -1,6 +1,6 @@
 import type { Rarity } from './types';
 
-export const RARITY_ORDER: Rarity[] = ['common', 'rare', 'epic', 'mythic', 'legendary', 'secret'];
+export const RARITY_ORDER: Rarity[] = ['common', 'rare', 'epic', 'mythic', 'legendary', 'exotic', 'secret'];
 
 export const RARITY_LABEL: Record<Rarity, string> = {
   common: 'Common',
@@ -8,6 +8,7 @@ export const RARITY_LABEL: Record<Rarity, string> = {
   epic: 'Epic',
   mythic: 'Mythic',
   legendary: 'Legendary',
+  exotic: 'Exotic',
   secret: 'Secret',
 };
 
@@ -18,17 +19,19 @@ export const RARITY_COUNT: Record<Rarity, number> = {
   epic: 10,
   mythic: 10,
   legendary: 10,
+  exotic: 10,
   secret: 1,
 };
 
-/** Relative pick weight per rarity *tier* on the wheel (not per-theme). */
+/** Relative pick weight per rarity *tier* on the wheel (not per-theme). Sums to exactly 100. */
 export const RARITY_WHEEL_WEIGHT: Record<Rarity, number> = {
-  common: 40,
-  rare: 30,
+  common: 42,
+  rare: 27,
   epic: 15,
-  mythic: 10,
-  legendary: 5,
-  secret: 1,
+  mythic: 8,
+  legendary: 4.5,
+  exotic: 3,
+  secret: 0.5,
 };
 
 /**
@@ -44,7 +47,7 @@ export interface RarityIntensity {
   decorCountMul: number;
   /** >1 = faster/livelier background motion, <1 = calmer. */
   animSpeedMul: number;
-  boardFrame: 'plain' | 'accent' | 'glow' | 'ornate' | 'premium';
+  boardFrame: 'plain' | 'accent' | 'glow' | 'ornate' | 'premium' | 'exotic';
 }
 
 export const RARITY_INTENSITY: Record<Rarity, RarityIntensity> = {
@@ -53,6 +56,14 @@ export const RARITY_INTENSITY: Record<Rarity, RarityIntensity> = {
   epic: { glowMul: 1.15, highlightMul: 1.1, particleCountMul: 1.2, decorCountMul: 1.15, animSpeedMul: 1.2, boardFrame: 'glow' },
   mythic: { glowMul: 1.4, highlightMul: 1.2, particleCountMul: 1.5, decorCountMul: 1.35, animSpeedMul: 1.35, boardFrame: 'ornate' },
   legendary: { glowMul: 1.7, highlightMul: 1.3, particleCountMul: 1.9, decorCountMul: 1.6, animSpeedMul: 1.5, boardFrame: 'premium' },
+  // Exotic reads as *more* visually charged than Legendary (spec: "visuell
+  // noch wertvoller als Legendary") but its board frame is a distinct
+  // cyan/violet/pink shifting gradient rather than Legendary's gold spin —
+  // different in kind, not just "more gold".
+  exotic: { glowMul: 1.9, highlightMul: 1.35, particleCountMul: 2.1, decorCountMul: 1.7, animSpeedMul: 1.4, boardFrame: 'exotic' },
+  // Secret intentionally does not escalate with these multipliers at all —
+  // it renders through its own dedicated, calmer, mostly-still pipeline
+  // (see SecretOverlay / the `secret` material) rather than "more sparkle".
   secret: { glowMul: 1, highlightMul: 1, particleCountMul: 1, decorCountMul: 1, animSpeedMul: 1, boardFrame: 'premium' },
 };
 

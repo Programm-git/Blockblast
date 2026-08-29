@@ -11,8 +11,14 @@ const SEGMENT_COLORS: Record<Rarity, string> = {
   epic: '#a768e0',
   mythic: '#ff6fa5',
   legendary: '#f4c542',
+  exotic: '#c75af6',
   secret: '#00f7ff',
 };
+
+/** Exotic's wheel slice sweeps cyan -> violet -> pink instead of a flat
+ *  fill, so it visibly stands apart from Legendary's solid gold even on
+ *  the wheel itself (spec: distinct in kind, not just "more gold"). */
+const EXOTIC_SWEEP = ['#00f7ff', '#a855f7', '#ff6fc4'];
 
 // Wheel order excludes nothing — every rarity (Secret included, at its slim
 // 1% weight) is representable, sized proportionally to RARITY_WHEEL_WEIGHT.
@@ -84,7 +90,16 @@ export function Wheel() {
     }, 3200);
   }, [spin, spinning, wheelExhausted, segments]);
 
-  const gradient = segments.map((s) => `${SEGMENT_COLORS[s.rarity]} ${s.start}deg ${s.end}deg`).join(', ');
+  const gradient = segments
+    .map((s) => {
+      if (s.rarity !== 'exotic') return `${SEGMENT_COLORS[s.rarity]} ${s.start}deg ${s.end}deg`;
+      const stops = EXOTIC_SWEEP.map((color, i) => {
+        const t = i / (EXOTIC_SWEEP.length - 1);
+        return `${color} ${s.start + (s.end - s.start) * t}deg`;
+      });
+      return stops.join(', ');
+    })
+    .join(', ');
 
   return (
     <div className="wheel-section">

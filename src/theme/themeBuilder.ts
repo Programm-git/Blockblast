@@ -33,6 +33,7 @@ const MATERIAL_RADIUS: Record<MaterialType, number> = {
   wood: 6,
   holo: 10,
   obsidian: 6,
+  glitch: 8,
   secret: 6,
 };
 
@@ -47,6 +48,7 @@ const MATERIAL_BASE_GLOW: Record<MaterialType, number> = {
   wood: 0.08,
   holo: 0.5,
   obsidian: 0.4,
+  glitch: 0.4,
   secret: 0.45,
 };
 
@@ -61,6 +63,8 @@ function layersForRarity(rarity: Rarity): number {
     case 'mythic':
       return 3;
     case 'legendary':
+      return 3;
+    case 'exotic':
       return 3;
     default:
       return 0;

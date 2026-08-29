@@ -321,6 +321,68 @@ export const THEME_DATA: CompactTheme[] = [
     decor: 'nebula', material: 'glow', particle: 'star', dark: true,
   },
 
+  // ---------- EXOTIC ----------
+  {
+    id: 'blackhole', name: 'Black Hole', rarity: 'exotic', unlock: WHEEL,
+    bg: ['#000000', '#0a0512', '#1c0c2a'], surface: '#0a0512', accent: '#c67fef',
+    blocks: ['#00f7ff', '#a855f7', '#ff7a3d', '#ff6fc4', '#4f8ef7', '#ffffff'],
+    decor: 'nebula', material: 'obsidian', particle: 'glow', dark: true,
+  },
+  {
+    id: 'quantum', name: 'Quantum', rarity: 'exotic', unlock: WHEEL,
+    bg: ['#050818', '#0e1030', '#1a1440'], surface: '#0c1028', accent: '#4fe0ff',
+    blocks: ['#4fe0ff', '#7f5cff', '#ffffff', '#00d4ff', '#a855f7', '#5f7cff'],
+    decor: 'sparkle', material: 'crystal', particle: 'ripple', dark: true,
+  },
+  {
+    id: 'liquidchrome', name: 'Liquid Chrome', rarity: 'exotic', unlock: WHEEL,
+    bg: ['#050505', '#101014', '#1a1a1e'], surface: '#0c0c0e', accent: '#c9ccd6',
+    blocks: ['#c9ccd6', '#8f95a3', '#4fe0ff', '#a855f7', '#4f8ef7', '#ff9c4a'],
+    decor: 'clouds', material: 'metal', particle: 'spark', dark: true,
+  },
+  {
+    id: 'prism', name: 'Prism', rarity: 'exotic', unlock: WHEEL,
+    bg: ['#0a0a14', '#141428', '#1c1c38'], surface: '#0e0e1c', accent: '#b98cf0',
+    blocks: ['#ff6f6f', '#ff9c4a', '#ffe14a', '#5fe07a', '#4fe0ff', '#b98cf0'],
+    decor: 'sparkle', material: 'crystal', particle: 'crystal', dark: true,
+  },
+  {
+    id: 'glitchexotic', name: 'Glitch', rarity: 'exotic', unlock: WHEEL,
+    bg: ['#000000', '#0a0a1e', '#140a2a'], surface: '#0a0a18', accent: '#ff2fd4',
+    blocks: ['#00e5ff', '#ff2fd4', '#5f7cff', '#a855f7', '#aef23e', '#ff7a1e'],
+    decor: 'glitch', material: 'glitch', particle: 'pixel', dark: true,
+  },
+  {
+    id: 'zerogravity', name: 'Zero Gravity', rarity: 'exotic', unlock: WHEEL,
+    bg: ['#080818', '#101830', '#182040'], surface: '#0e1428', accent: '#4f8ef7',
+    blocks: ['#4f8ef7', '#4fe0ff', '#a855f7', '#ff9c4a', '#ff6fc4', '#5fe07a'],
+    decor: 'fireflies', material: 'glass', particle: 'glow', dark: true,
+  },
+  {
+    id: 'darkmatter', name: 'Dark Matter', rarity: 'exotic', unlock: WHEEL,
+    bg: ['#020104', '#0a0414', '#160a24'], surface: '#0a0512', accent: '#a855f7',
+    blocks: ['#7f2cef', '#4fe0ff', '#dc143c', '#4f8ef7', '#ffffff', '#ff4ecb'],
+    decor: 'nebula', material: 'obsidian', particle: 'glow', dark: true,
+  },
+  {
+    id: 'holographic', name: 'Holographic', rarity: 'exotic', unlock: WHEEL,
+    bg: ['#050a14', '#0c1428', '#141c38'], surface: '#0c121e', accent: '#4fe0ff',
+    blocks: ['#4fe0ff', '#5f7cff', '#a855f7', '#ff6fc4', '#5fe07a', '#ff9c4a'],
+    decor: 'lightning', material: 'holo', particle: 'pixel', dark: true,
+  },
+  {
+    id: 'eclipse', name: 'Eclipse', rarity: 'exotic', unlock: WHEEL,
+    bg: ['#000000', '#0a0a20', '#140a30'], surface: '#0a0a16', accent: '#f4c542',
+    blocks: ['#0a0a0a', '#f4c542', '#ffffff', '#7f2cef', '#1c1c3a', '#ff9c4a'],
+    decor: 'aurora', material: 'obsidian', particle: 'spark', dark: true,
+  },
+  {
+    id: 'infinity', name: 'Infinity', rarity: 'exotic', unlock: WHEEL,
+    bg: ['#040414', '#0a0a2a', '#140c3c'], surface: '#0a0a1e', accent: '#4fe0ff',
+    blocks: ['#4f5cff', '#a855f7', '#4fe0ff', '#ffffff', '#ff6fc4', '#7f5cef'],
+    decor: 'nebula', material: 'holo', particle: 'glow', dark: true,
+  },
+
   // ---------- SECRET ----------
   {
     id: 'secret', name: "I'M SECRET", rarity: 'secret', unlock: SECRET,

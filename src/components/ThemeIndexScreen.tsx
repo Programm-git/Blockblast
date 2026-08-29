@@ -1,5 +1,5 @@
 import { useTheme } from '../theme/ThemeContext';
-import { RARITY_LABEL, RARITY_ORDER } from '../theme/rarity';
+import { RARITY_COUNT, RARITY_LABEL, RARITY_ORDER } from '../theme/rarity';
 import { themesByRarity } from '../theme/themes';
 import type { GameTheme, Rarity } from '../theme/types';
 import './ThemeIndexScreen.css';
@@ -37,6 +37,7 @@ function IndexCard({ theme, unlocked, active, onSelect }: { theme: GameTheme; un
       style={{ background: `linear-gradient(160deg, ${theme.background.gradient[0]}, ${theme.background.gradient[theme.background.gradient.length - 1]})` }}
     >
       {(theme.rarity === 'mythic' || theme.rarity === 'legendary') && <div className="index-card-shine" />}
+      {theme.rarity === 'exotic' && <div className="index-card-shine index-card-shine--exotic" />}
       <div className="index-card-board" style={{ background: theme.board.background, borderColor: theme.board.border }}>
         {theme.blocks.colors.slice(0, 3).map((c, i) => (
           <span key={i} className="index-card-swatch" style={{ background: c, borderRadius: theme.blocks.borderRadius * 0.6 }} />
@@ -51,6 +52,7 @@ function IndexCard({ theme, unlocked, active, onSelect }: { theme: GameTheme; un
 export function ThemeIndexScreen({ onBack }: ThemeIndexScreenProps) {
   const { themeId, isUnlocked, setTheme } = useTheme();
   const unlockedCount = RARITY_ORDER.reduce((sum, r) => sum + themesByRarity(r).filter((t) => isUnlocked(t.id)).length, 0);
+  const totalCount = RARITY_ORDER.reduce((sum, r) => sum + RARITY_COUNT[r], 0);
 
   return (
     <div className="theme-index">
@@ -59,7 +61,7 @@ export function ThemeIndexScreen({ onBack }: ThemeIndexScreenProps) {
           ← ZURÜCK
         </button>
         <h2>INDEX</h2>
-        <span className="theme-index-count">{unlockedCount} / 51</span>
+        <span className="theme-index-count">{unlockedCount} / {totalCount}</span>
       </div>
 
       {RARITY_ORDER.map((rarity: Rarity) => (

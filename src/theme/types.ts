@@ -1,4 +1,4 @@
-export type Rarity = 'common' | 'rare' | 'epic' | 'mythic' | 'legendary' | 'secret';
+export type Rarity = 'common' | 'rare' | 'epic' | 'mythic' | 'legendary' | 'exotic' | 'secret';
 
 export type ParticleType =
   | 'square'
@@ -51,6 +51,7 @@ export type MaterialType =
   | 'wood'
   | 'holo'
   | 'obsidian'
+  | 'glitch'
   | 'secret';
 
 /** How a theme is obtained. Gameplay never depends on this. */

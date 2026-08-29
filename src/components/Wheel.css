@@ -225,6 +225,10 @@
   animation: wheel-result-shine 1.6s ease-in-out infinite;
 }
 
+.wheel-result--exotic .wheel-result-name {
+  animation: wheel-result-exotic-shine 2.2s ease-in-out infinite;
+}
+
 @keyframes wheel-result-shine {
   0%,
   100% {
@@ -232,6 +236,19 @@
   }
   50% {
     text-shadow: 0 0 20px currentColor, 0 0 34px currentColor;
+  }
+}
+
+@keyframes wheel-result-exotic-shine {
+  0%,
+  100% {
+    text-shadow: 0 0 16px #00f7ff;
+  }
+  33% {
+    text-shadow: 0 0 22px #a855f7;
+  }
+  66% {
+    text-shadow: 0 0 22px #ff6fc4;
   }
 }
 
