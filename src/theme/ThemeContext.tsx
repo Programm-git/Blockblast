@@ -17,9 +17,12 @@ interface ThemeContextValue {
   unlockedIds: Set<string>;
   isUnlocked: (id: string) => boolean;
   setTheme: (id: string) => void;
-  /** Called after a move fully settles; rotates to the next unlocked theme
-   *  when the move cleared at least one line, and silently checks the
-   *  secret theme's hidden unlock condition. Never mid-drag or mid-animation. */
+  /** Called after a move fully settles; switches to a uniformly random
+   *  *other* unlocked theme when the move cleared at least one line (so
+   *  every unlocked theme — Secret included — has exactly the same chance
+   *  of coming up as any single Common one, never more or less just for
+   *  having a rarer tier), and silently checks the secret theme's hidden
+   *  unlock condition. Never mid-drag or mid-animation. */
   onMoveSettled: (info: MoveInfo) => void;
   /** Spins the rarity-weighted wheel; returns the id of the newly unlocked
    *  theme, or null if every wheel-eligible theme is already unlocked. */
@@ -99,13 +102,15 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
       if (checkSecretUnlock({ lineCount, combo })) unlock('secret');
 
       if (lineCount <= 0) return;
-      // Rotate to the next unlocked theme, in stable registry order, so the
-      // world visibly changes each time a line is cleared.
-      const unlockedInOrder = THEMES.filter((t) => unlockedIds.has(t.id));
-      if (unlockedInOrder.length <= 1) return;
-      const idx = unlockedInOrder.findIndex((t) => t.id === themeId);
-      const next = unlockedInOrder[(idx + 1 + unlockedInOrder.length) % unlockedInOrder.length];
-      if (next.id !== themeId) applyTheme(next.id);
+      // Pick uniformly at random among the *other* unlocked themes — a
+      // plain round-robin would still give every theme equal turns, but a
+      // random pick is what actually guarantees Secret has the same
+      // per-clear odds as any single Common theme, since neither a theme's
+      // rarity nor its position in the registry affects its chance here.
+      const candidates = THEMES.filter((t) => unlockedIds.has(t.id) && t.id !== themeId);
+      if (candidates.length === 0) return;
+      const next = candidates[Math.floor(Math.random() * candidates.length)];
+      applyTheme(next.id);
     },
     [themeId, unlockedIds, applyTheme, unlock],
   );
