@@ -220,6 +220,13 @@
   color: #b5a8c9;
 }
 
+.wheel-result-name--miss {
+  color: #8a7ba8;
+  font-size: 17px;
+  animation: none !important;
+  text-shadow: none !important;
+}
+
 .wheel-result--legendary .wheel-result-name,
 .wheel-result--secret .wheel-result-name {
   animation: wheel-result-shine 1.6s ease-in-out infinite;

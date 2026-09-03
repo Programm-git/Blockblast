@@ -2,6 +2,7 @@ import { createContext, useCallback, useContext, useEffect, useMemo, useRef, use
 import type { ReactNode } from 'react';
 import { DEFAULT_THEME_ID, THEMES, getThemeById } from './themes';
 import { checkSecretUnlock, checkStreakUnlocks, isWheelExhausted, readUnlockedIds, spinWheel, writeUnlockedIds } from './unlock';
+import type { SpinResult } from './unlock';
 import { computeStreak, readPlayedDates } from './streak';
 import type { GameTheme } from './types';
 
@@ -25,9 +26,12 @@ interface ThemeContextValue {
    *  having a rarer tier), and silently checks the secret theme's hidden
    *  unlock condition. Never mid-drag or mid-animation. */
   onMoveSettled: (info: MoveInfo) => void;
-  /** Spins the rarity-weighted wheel; returns the id of the newly unlocked
-   *  theme, or null if every wheel-eligible theme is already unlocked. */
-  spin: () => string | null;
+  /** Spins the rarity-weighted wheel. Returns the rolled rarity plus the
+   *  newly unlocked theme id — or a null themeId if that rarity's already
+   *  fully unlocked (a genuine miss, so rarer tiers never get inflated
+   *  odds just because lower ones ran out). Returns null outright only once
+   *  every wheel-eligible theme, any rarity, is already unlocked. */
+  spin: () => SpinResult | null;
   wheelExhausted: boolean;
   /** Unlocks any Streak-rarity theme whose day threshold the current play
    *  streak has reached. Cheap and idempotent — safe to call on every game
@@ -133,10 +137,10 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     [themeId, unlockedIds, applyTheme, unlock],
   );
 
-  const spin = useCallback((): string | null => {
-    const won = spinWheel(unlockedIds);
-    if (won) unlock(won);
-    return won;
+  const spin = useCallback((): SpinResult | null => {
+    const result = spinWheel(unlockedIds);
+    if (result?.themeId) unlock(result.themeId);
+    return result;
   }, [unlockedIds, unlock]);
 
   const wheelExhausted = useMemo(() => isWheelExhausted(unlockedIds), [unlockedIds]);

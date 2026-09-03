@@ -1,6 +1,15 @@
 import { THEMES, DEFAULT_THEME_ID, SECRET_THEME_ID } from './themes';
-import { RARITY_WHEEL_WEIGHT } from './rarity';
+import { RARITY_WHEEL_WEIGHT, WHEEL_RARITIES } from './rarity';
 import type { Rarity } from './types';
+
+export interface SpinResult {
+  rarity: Rarity;
+  /** The theme actually awarded, or null if this roll landed on a rarity
+   *  tier that's already fully unlocked — a "miss": nothing is awarded, but
+   *  the wheel still visibly lands on that rarity so the odds stay honest
+   *  (see spinWheel). */
+  themeId: string | null;
+}
 
 const UNLOCKED_KEY = 'blockblast:unlockedThemes';
 
@@ -26,38 +35,45 @@ export function writeUnlockedIds(ids: Set<string>) {
 }
 
 /**
- * Picks a random still-locked theme for the wheel to award, weighted by
- * rarity tier (RARITY_WHEEL_WEIGHT) — including a slim 1% chance at the
- * Secret theme itself. The hidden in-game condition (checkSecretUnlock)
- * remains a second, independent way to earn it early. Returns null once
- * every wheel-eligible theme is already unlocked.
+ * Rolls a rarity tier against the *fixed* wheel odds (RARITY_WHEEL_WEIGHT,
+ * always summing to 100 across all wheel-eligible rarities), then picks a
+ * random still-locked theme from that tier.
+ *
+ * The roll always uses the full fixed table — it never renormalizes over
+ * only the tiers that still have something left. Renormalizing was the bug:
+ * once every Common/Rare/Epic/Mythic theme was unlocked, their weight
+ * silently piled onto the remaining tiers, making Legendary+ a *guaranteed*
+ * hit instead of staying at its advertised 4.5%. Now a roll that lands on an
+ * already-fully-unlocked tier is a genuine miss (themeId: null) — the wheel
+ * still visibly lands on that rarity, but nothing is awarded — so Legendary
+ * stays at 4.5% of all spins for as long as there's anything left to give
+ * out anywhere, exactly like the odds legend says.
+ *
+ * Returns null only once every wheel-eligible theme (any rarity) is already
+ * unlocked — there is nothing left for any roll to award.
  */
-export function spinWheel(unlockedIds: Set<string>): string | null {
+export function spinWheel(unlockedIds: Set<string>): SpinResult | null {
   // Streak themes (like the starting theme) are never wheel-eligible — they
   // only unlock by hitting a play-streak milestone, so both are excluded
   // here rather than just 'start'.
   const wheelThemes = THEMES.filter((t) => t.unlock.type !== 'start' && t.unlock.type !== 'streak' && !unlockedIds.has(t.id));
   if (wheelThemes.length === 0) return null;
 
-  const tiersPresent = new Set(wheelThemes.map((t) => t.rarity));
-  const weighted: Array<{ rarity: Rarity; weight: number }> = [...tiersPresent].map((rarity) => ({
-    rarity,
-    weight: RARITY_WHEEL_WEIGHT[rarity],
-  }));
-  const totalWeight = weighted.reduce((sum, w) => sum + w.weight, 0);
+  const totalWeight = WHEEL_RARITIES.reduce((sum, r) => sum + RARITY_WHEEL_WEIGHT[r], 0);
   let roll = Math.random() * totalWeight;
-  let chosenRarity: Rarity = weighted[0].rarity;
-  for (const w of weighted) {
-    if (roll < w.weight) {
-      chosenRarity = w.rarity;
+  let chosenRarity: Rarity = WHEEL_RARITIES[0];
+  for (const rarity of WHEEL_RARITIES) {
+    const weight = RARITY_WHEEL_WEIGHT[rarity];
+    if (roll < weight) {
+      chosenRarity = rarity;
       break;
     }
-    roll -= w.weight;
+    roll -= weight;
   }
 
   const pool = wheelThemes.filter((t) => t.rarity === chosenRarity);
-  const winner = pool[Math.floor(Math.random() * pool.length)];
-  return winner.id;
+  const winner = pool.length > 0 ? pool[Math.floor(Math.random() * pool.length)] : null;
+  return { rarity: chosenRarity, themeId: winner?.id ?? null };
 }
 
 export function isWheelExhausted(unlockedIds: Set<string>): boolean {

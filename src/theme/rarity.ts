@@ -81,3 +81,9 @@ export const RARITY_INTENSITY: Record<Rarity, RarityIntensity> = {
 export function rarityIndex(rarity: Rarity): number {
   return RARITY_ORDER.indexOf(rarity);
 }
+
+/** Rarities the wheel can ever land on, in a fixed order — everything
+ *  except Streak (achievement-only, never spinnable). Used both to draw the
+ *  wheel's segments and to actually roll a spin, so the two can never drift
+ *  apart. */
+export const WHEEL_RARITIES: Rarity[] = RARITY_ORDER.filter((r) => r !== 'streak');

@@ -1,7 +1,7 @@
 import { useCallback, useMemo, useRef, useState } from 'react';
 import { useTheme } from '../theme/ThemeContext';
 import { getThemeById } from '../theme/themes';
-import { RARITY_LABEL, RARITY_ORDER, RARITY_WHEEL_WEIGHT } from '../theme/rarity';
+import { RARITY_LABEL, RARITY_WHEEL_WEIGHT, WHEEL_RARITIES } from '../theme/rarity';
 import type { Rarity } from '../theme/types';
 import './Wheel.css';
 
@@ -22,11 +22,6 @@ const SEGMENT_COLORS: Record<Rarity, string> = {
  *  fill, so it visibly stands apart from Legendary's solid gold even on
  *  the wheel itself (spec: distinct in kind, not just "more gold"). */
 const EXOTIC_SWEEP = ['#00f7ff', '#a855f7', '#ff6fc4'];
-
-// Every rarity is representable except Streak — those themes only unlock via
-// a play-streak milestone and must never be a wheel outcome, so they're
-// excluded from the wheel entirely (no segment, no odds line, weight 0).
-const WHEEL_RARITIES: Rarity[] = RARITY_ORDER.filter((r) => r !== 'streak');
 
 interface Segment {
   rarity: Rarity;
@@ -51,9 +46,9 @@ export function Wheel() {
   const { spin, wheelExhausted } = useTheme();
   const [spinning, setSpinning] = useState(false);
   const [angle, setAngle] = useState(0);
-  const [result, setResult] = useState<{ name: string; rarity: Rarity } | null>(null);
+  const [result, setResult] = useState<{ name: string | null; rarity: Rarity } | null>(null);
   const angleRef = useRef(0);
-  const pendingResult = useRef<{ name: string; rarity: Rarity } | null>(null);
+  const pendingResult = useRef<{ name: string | null; rarity: Rarity } | null>(null);
 
   const segments = useMemo(() => buildSegments(), []);
   const bulbs = useMemo(() => Array.from({ length: BULB_COUNT }, (_, i) => (i / BULB_COUNT) * 360), []);
@@ -63,15 +58,19 @@ export function Wheel() {
 
     // Decide the actual prize first, then aim the wheel's rotation at that
     // exact segment — the animation must always land where the result says.
-    const wonId = spin();
-    if (!wonId) return;
-    const won = getThemeById(wonId);
-    pendingResult.current = { name: won.name, rarity: won.rarity };
+    // A roll can land on a rarity that's already fully unlocked (themeId
+    // null) — a genuine miss, shown as such rather than silently awarding
+    // something from a different tier (that's what used to make Legendary+
+    // a guaranteed hit once every Common/Rare/Epic/Mythic was gone).
+    const rolled = spin();
+    if (!rolled) return;
+    const wonName = rolled.themeId ? getThemeById(rolled.themeId).name : null;
+    pendingResult.current = { name: wonName, rarity: rolled.rarity };
 
     setSpinning(true);
     setResult(null);
 
-    const seg = segments.find((s) => s.rarity === won.rarity)!;
+    const seg = segments.find((s) => s.rarity === rolled.rarity)!;
     const span = seg.end - seg.start;
     const jitter = (Math.random() - 0.5) * (span * 0.6);
     const targetWithinSegment = (seg.start + seg.end) / 2 + jitter;
@@ -152,8 +151,17 @@ export function Wheel() {
       {result && (
         <div className={`wheel-result wheel-result--${result.rarity}`} style={{ color: SEGMENT_COLORS[result.rarity] }}>
           <span className="wheel-result-rarity">{RARITY_LABEL[result.rarity].toUpperCase()}</span>
-          <span className="wheel-result-name">{result.name}</span>
-          <span className="wheel-result-sub">freigeschaltet!</span>
+          {result.name ? (
+            <>
+              <span className="wheel-result-name">{result.name}</span>
+              <span className="wheel-result-sub">freigeschaltet!</span>
+            </>
+          ) : (
+            <>
+              <span className="wheel-result-name wheel-result-name--miss">Schon alles da</span>
+              <span className="wheel-result-sub">kein neues Thema diesmal</span>
+            </>
+          )}
         </div>
       )}
 
