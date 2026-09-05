@@ -56,32 +56,37 @@ const MATERIAL_BASE_GLOW: Record<MaterialType, number> = {
  *  id. Themes with a bespoke clear effect need more time on screen than the
  *  default scale/fade, so the game must hold the board — and delay the next
  *  theme switch — for exactly this long rather than one fixed duration for
- *  every theme. Falls back to DEFAULT_CLEAR_MS for every theme not listed. */
+ *  every theme. Falls back to DEFAULT_CLEAR_MS for every theme not listed.
+ *
+ *  Capped at ~500ms (previously up to 680ms): every ms here is the board
+ *  refusing new placements after a clear, so a long "epic" duration reads as
+ *  input lag on a fast-paced board game, not spectacle. Kept short enough to
+ *  stay snappy while still clearly longer than the 280ms default. */
 export const DEFAULT_CLEAR_MS = 280;
 export const CLEAR_ANIMATION_MS: Partial<Record<string, number>> = {
   secret: 420,
   // Exotic
-  blackhole: 560,
-  quantum: 520,
-  liquidchrome: 560,
-  prism: 600,
-  glitchexotic: 480,
-  zerogravity: 580,
-  darkmatter: 560,
-  holographic: 540,
-  eclipse: 580,
-  infinity: 600,
+  blackhole: 460,
+  quantum: 440,
+  liquidchrome: 460,
+  prism: 480,
+  glitchexotic: 420,
+  zerogravity: 460,
+  darkmatter: 440,
+  holographic: 440,
+  eclipse: 460,
+  infinity: 480,
   // Legendary
-  galaxycore: 620,
-  heavenearth: 560,
-  infernokingdom: 540,
-  cosmicocean: 580,
-  goldenempire: 600,
-  worldtree: 580,
-  dimensionalrift: 520,
-  godstorm: 540,
-  eternalicepalace: 560,
-  universe: 680,
+  galaxycore: 480,
+  heavenearth: 440,
+  infernokingdom: 420,
+  cosmicocean: 460,
+  goldenempire: 480,
+  worldtree: 460,
+  dimensionalrift: 420,
+  godstorm: 420,
+  eternalicepalace: 440,
+  universe: 500,
 };
 
 export function getClearDurationMs(theme: Pick<GameTheme, 'id'>): number {

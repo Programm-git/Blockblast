@@ -38,6 +38,13 @@ export function ParticleLayer({ event, theme, reducedMotion }: ParticleLayerProp
   const [flash, setFlash] = useState(false);
   const timers = useRef<number[]>([]);
   const isSecret = theme.rarity === 'secret';
+  // Legendary/Exotic themes already carry a bespoke per-block clear animation
+  // (Block.css) plus, on bigger clears, a board-level hero-moment overlay
+  // (LegendaryExoticClearFX) — stacking the generic confetti burst on top of
+  // those was a third animating system competing for the same frames during
+  // exactly the busiest, showiest clears. The flash still plays; only the
+  // per-cell particle spawn is skipped.
+  const skipConfetti = theme.rarity === 'legendary' || theme.rarity === 'exotic';
 
   useEffect(() => {
     if (!event) return;
@@ -48,7 +55,7 @@ export function ParticleLayer({ event, theme, reducedMotion }: ParticleLayerProp
     const flashTimer = window.setTimeout(() => setFlash(false), isSecret ? 90 : 260);
     timers.current.push(flashTimer);
 
-    if (reducedMotion) return;
+    if (reducedMotion || skipConfetti) return;
 
     if (isSecret) {
       const bits: DataBit[] = event.cells.slice(0, 20).map(([r, c], i) => {
@@ -87,7 +94,7 @@ export function ParticleLayer({ event, theme, reducedMotion }: ParticleLayerProp
     setParticles(next);
     const clearTimer = window.setTimeout(() => setParticles([]), 700 / intensity.animSpeedMul);
     timers.current.push(clearTimer);
-  }, [event, theme, reducedMotion, isSecret]);
+  }, [event, theme, reducedMotion, isSecret, skipConfetti]);
 
   useEffect(() => () => timers.current.forEach((t) => window.clearTimeout(t)), []);
 
